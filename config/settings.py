@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Alehson',
+    'drf_yasg',
+    'rest_framework',
     
 ]
 
@@ -118,6 +121,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Alehson Admin",
+    "site_header": "Alehson",
+    'site_brand': 'Alehson',
+    'copyright': 'Alehson',
+    'show_ui_builder': False,
+    'show_navigation': True,
+    'theme': 'dark',
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
