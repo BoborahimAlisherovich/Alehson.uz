@@ -28,6 +28,11 @@ from django.conf.urls.static import static
 
 from Alehson.views import (
     NewsViewSet,
+    CategoryViewSet,
+    SubCategoryViewSet,
+    ApplicationViewSet,
+    ImagesViewSet
+    
 )
 
 schema_view = get_schema_view(
@@ -54,6 +59,13 @@ urlpatterns = [
 
     # Spaces
     path("news/", NewsViewSet.as_view({'get': 'list'})),
+    path("catigories/", CategoryViewSet.as_view({'get': 'list'})),
+    path("subcatigories/", SubCategoryViewSet.as_view({'get': 'list'})),
+
+    path("application/", ApplicationViewSet.as_view({'get': 'list'})),
+    path("subimage/", ImagesViewSet.as_view({'get': 'list'})),
+
+    
     # path("spaces/<int:pk>/", SpaceViewSet.as_view({'get': 'retrieve'}), name="space-detail"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
