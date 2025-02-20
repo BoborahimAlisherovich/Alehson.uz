@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -14,12 +16,15 @@ class SubCategory(models.Model):
     def __str__(self):
         return f"{self.category.name} → {self.name}"
 
+from ckeditor.fields import RichTextField
+
 class News(models.Model):
     title = models.CharField(max_length=100)
-    content = models.TextField()
+    content = RichTextField()
     region = models.CharField(max_length=100)
     image = models.ImageField(upload_to="Images/News")
     created_date = models.DateTimeField(auto_now_add=True)
+    view_count = models.IntegerField(default=0)
     slug = models.SlugField(max_length=100, unique=True)
 
     def __str__(self):
@@ -31,47 +36,46 @@ class News(models.Model):
 
 
 
-
-class Application(models.Model):
-    full_last_name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=13)
-    passport = models.CharField(max_length=20)  
-    region = models.CharField(max_length=50)
-    birth_date = models.DateField()
-    # catigorys = models.ForeignKey("Catigory",on_delete=models.CASCADE)
-
-    descriptions = models.TextField()
-    card_number = models.BigIntegerField()
-    # images = models.ManyToManyField(Images, related_name="applications")
-
-    def __str__(self):
-        return self.full_last_name
-
-
-
-# class Images(models.Model):
-#     image = models.ImageField(upload_to="Images/Application/")
-#     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="Applications_images")
-
-
-#     def __str__(self):
-#         return f"{self.application.full_last_name}→ {self.image}"
     
 
+class Application(models.Model):
+  
+  petition_id = models.AutoField(primary_key=True)
+  full_name = models.CharField(max_length=100)
+  phone_number = models.CharField(max_length=13)
+  birthday = models.DateField()
+  information = models.TextField()
+  plastic_card = models.CharField(max_length=16)
+  is_active = models.BooleanField(default=False)
+  view_count = models.IntegerField(default=0)
+  image = models.ImageField(upload_to = 'images/',  blank = True, null=True, default='')
+  region = models.CharField(max_length=300)
+  code = models.CharField(max_length=5)
+  category = models.ForeignKey(Category,related_name='Applications',on_delete=models.CASCADE,blank=True, null=True)
+
+  def __str__(self):
+        return self.full_name
+
+def user_directory_path(instance, filename): 
+  
+    return 'images/{0}/{1}'.format(instance.petition.petition_id, filename) 
+
+
+
+class Eskizsms(models.Model):
+    phone_number = models.CharField(max_length=13)
+    verification_code = models.CharField(max_length=5)
+    def __str__(self):
+        return self.phone_number
+
+
 class Images(models.Model):
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="Images/Application/")
-    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="images")  # related_name yangilandi
 
     def __str__(self):
-        return f"{self.application.full_last_name}→ {self.image}"
+        return f"{self.application.full_name} → {self.image}"
 
     
 
    
-    
-
-
-
-    # def __str__(self):
-    #     return f"Image {self.id}"
-

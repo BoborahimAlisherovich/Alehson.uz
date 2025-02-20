@@ -31,32 +31,22 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 
-# class ImageInline(admin.TabularInline):  # Inline ko'rinishda chiqarish
-#     model = Images
-#     extra = 1  # Kamida 1 ta bo‘sh input chiqadi
-
-
-# @admin.register(Images)
-# class ImagesAdmin(admin.ModelAdmin):
-#     list_display = ('image',)
-
-
-# class ImageInline(admin.TabularInline):
-#     model = Application.images.through  # ManyToMany uchun qo‘shish
-#     extra = 1
-
-
-
 class ImageInline(admin.TabularInline):  # Inline ko'rinishda chiqarish
     model = Images
     extra = 1  # Kamida 1 ta bo‘sh input chiqadi
 
 
-@admin.register(Application)
+@admin.register(Application)    
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('full_last_name', 'phone', 'passport', 'region', 'birth_date')
+    list_display = ('full_name','phone_number', 'birthday', 'is_active')
     inlines = [ImageInline]
 
-@admin.register(Images)
-class ImagesAdmin(admin.ModelAdmin):
-    list_display = ('id', 'image')
+
+# @admin.register(Images)
+# class ImagesAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'image')
+
+
+# @admin.register(Images)
+# class ImagesAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'image', 'application')

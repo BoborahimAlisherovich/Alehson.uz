@@ -31,7 +31,8 @@ from Alehson.views import (
     CategoryViewSet,
     SubCategoryViewSet,
     ApplicationViewSet,
-    ImagesViewSet
+    ImagesViewSet,
+    CreateEskizview
     
 )
 
@@ -62,8 +63,12 @@ urlpatterns = [
     path("catigories/", CategoryViewSet.as_view({'get': 'list'})),
     path("subcatigories/", SubCategoryViewSet.as_view({'get': 'list'})),
 
-    path("application/", ApplicationViewSet.as_view({'get': 'list'})),
+    path("application/", ApplicationViewSet.as_view({'get': 'list', 'post': 'create'})),
+
     path("subimage/", ImagesViewSet.as_view({'get': 'list'})),
+
+    path("createEskiz/", CreateEskizview.as_view(), name="create-eskiz"),
+
 
     
     # path("spaces/<int:pk>/", SpaceViewSet.as_view({'get': 'retrieve'}), name="space-detail"),

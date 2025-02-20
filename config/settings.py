@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'Alehson',
     'drf_yasg',
     'rest_framework',
+    'ckeditor',
+
     
 ]
 
@@ -121,6 +123,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static/'
+]
+
 
 
 JAZZMIN_SETTINGS = {
@@ -131,6 +137,7 @@ JAZZMIN_SETTINGS = {
     'show_ui_builder': False,
     'show_navigation': True,
     'theme': 'dark',
+    "site_logo": "ehson.png",
 }
 
 # Default primary key field type
