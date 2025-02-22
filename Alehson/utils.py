@@ -1,6 +1,6 @@
 import os
 import requests
-from decouple import config
+# from decouple import config
 
 # Constants for status codes
 SUCCESS = 200
@@ -12,8 +12,8 @@ SMS_NOT_FOUND = 404
 SMS_SERVICE_NOT_TURNED = 600
 
 # Configuration (Using decouple for secure management)
-ESKIZ_EMAIL = config('ESKIZ_EMAIL')
-ESKIZ_PASSWORD = config('ESKIZ_PASSWORD')
+ESKIZ_EMAIL = "boborahimrustamqulov0@gmail.com"
+ESKIZ_PASSWORD = "boborahim007"
 
 class SendSmsApiWithEskiz:
     def __init__(self, message, phone, email=ESKIZ_EMAIL, password=ESKIZ_PASSWORD):
