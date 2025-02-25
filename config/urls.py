@@ -32,7 +32,7 @@ from Alehson.views import (
     SubCategoryViewSet,
     ApplicationViewSet,
     ImagesViewSet,
-    CreateEskizview
+
     
 )
 
@@ -52,28 +52,39 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
-    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+    path("", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 
 
+    path("news/", NewsViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("news/<int:pk>/", NewsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
+    # Categories CRUD
+    path("categories/", CategoryViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("categories/<int:pk>/", CategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
-    # Spaces
-    path("news/", NewsViewSet.as_view({'get': 'list'})),
-    path("catigories/", CategoryViewSet.as_view({'get': 'list'})),
-    path("subcatigories/", SubCategoryViewSet.as_view({'get': 'list'})),
+    # Subcategories CRUD
+    path("subcategories/", SubCategoryViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("subcategories/<int:pk>/", SubCategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
+    # Applications CRUD
     path("application/", ApplicationViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("application/<int:pk>/", ApplicationViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
-    path("subimage/", ImagesViewSet.as_view({'get': 'list'})),
-
-    path("createEskiz/", CreateEskizview.as_view(), name="create-eskiz"),
+    # Subimage CRUD
+    path("subimage/", ImagesViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("subimage/<int:pk>/", ImagesViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
 
     
-    # path("spaces/<int:pk>/", SpaceViewSet.as_view({'get': 'retrieve'}), name="space-detail"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
+
+
+# MEDIA fayllarni xizmat qilish (DEBUG=True bo‘lsa)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

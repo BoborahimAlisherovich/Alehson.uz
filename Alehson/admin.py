@@ -16,6 +16,7 @@ class SubCategoryInline(admin.TabularInline):  # Inline ko'rinishda chiqarish
     model = SubCategory
     extra = 1  # Kamida 1 ta bo‘sh input chiqadi
 
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name',)  # Admin panelda ko‘rinadigan ustunlar
