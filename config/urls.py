@@ -25,6 +25,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from Alehson.views import (
     NewsViewSet,
@@ -51,6 +52,11 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
+
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+
+
     path("", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 
@@ -70,11 +76,7 @@ urlpatterns = [
     path("application/", ApplicationViewSet.as_view({'get': 'list', 'post': 'create'})),
     path("application/<int:pk>/", ApplicationViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
-    # Subimage CRUD
-    # path("subimage/", ImagesViewSet.as_view({'get': 'list', 'post': 'create'})),
-    # path("subimage/<int:pk>/", ImagesViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
-
-
+ 
     
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
