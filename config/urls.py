@@ -31,7 +31,6 @@ from Alehson.views import (
     CategoryViewSet,
     SubCategoryViewSet,
     ApplicationViewSet,
-    ImagesViewSet,
 
     
 )
@@ -72,8 +71,8 @@ urlpatterns = [
     path("application/<int:pk>/", ApplicationViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
     # Subimage CRUD
-    path("subimage/", ImagesViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path("subimage/<int:pk>/", ImagesViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    # path("subimage/", ImagesViewSet.as_view({'get': 'list', 'post': 'create'})),
+    # path("subimage/<int:pk>/", ImagesViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
 
     

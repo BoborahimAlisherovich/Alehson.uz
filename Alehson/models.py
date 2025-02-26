@@ -38,30 +38,29 @@ class News(models.Model):
 
 
 class Application(models.Model):
-    petition_id = models.AutoField(primary_key=True)
-    full_name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=13)
-    Passport_number = models.CharField(max_length=10)
-    region = models.CharField(max_length=300)
-    birthday = models.DateField()
-    category = models.ForeignKey(Category, related_name='Applications', on_delete=models.CASCADE)
-    information = models.TextField()
-    plastic_card = models.CharField(max_length=16)
-    image = models.ImageField(upload_to='images/', blank=True, null=True, default='')
-    is_active = models.BooleanField(default=False)
-    view_count = models.IntegerField(default=0)
+        petition_id = models.AutoField(primary_key=True)
+        full_name = models.CharField(max_length=100)
+        phone_number = models.CharField(max_length=13)
+        passport_number = models.CharField(max_length=10)
+        region = models.CharField(max_length=300)
+        birthday = models.DateField()
+        category = models.ForeignKey(Category, related_name='Applications', on_delete=models.CASCADE)
+        information = models.TextField()
+        plastic_card = models.CharField(max_length=16)
+        is_active = models.BooleanField(default=False)
+        view_count = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.full_name
-    
-def user_directory_path(instance, filename): 
-    return 'images/{0}/{1}'.format(instance.application.petition_id, filename) 
+        def __str__(self):
+            return self.full_name
+        
+    # def user_directory_path(instance, filename): 
+    #     return 'images/{0}/{1}'.format(instance.application.petition_id, filename) 
 
 
 
 class Images(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to=user_directory_path, default="", null=True, blank=True)
+    image = models.ImageField(upload_to="images/applications/", blank=True, null=True)
 
     def __str__(self):
-        return str(self.application)
+        return f"Image for {self.application.full_name}"

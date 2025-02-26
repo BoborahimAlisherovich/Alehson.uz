@@ -40,6 +40,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 
 from rest_framework.parsers import MultiPartParser, FormParser
 
+
 class ImagesViewSet(viewsets.ModelViewSet):
     queryset = Images.objects.all()
     serializer_class = ImagesSerializer
@@ -50,13 +51,6 @@ class ImagesViewSet(viewsets.ModelViewSet):
         if 'image' not in request.FILES:
             return Response({"error": "Image file required"}, status=status.HTTP_400_BAD_REQUEST)
         return super().create(request, *args, **kwargs)
-
-
-
-# class ImagesViewSet(viewsets.ModelViewSet):
-#     queryset = Images.objects.all()
-#     serializer_class = ImagesSerializer
-#     permission_classes = [permissions.IsAuthenticated]  # CRUD faqat authenticated userlar uchun
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
