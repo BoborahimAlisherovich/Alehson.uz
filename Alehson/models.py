@@ -14,20 +14,29 @@ class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="subcategories")
     name = models.CharField(max_length=100)
 
+
+    class Meta:
+        unique_together = ('category', 'name')  
+
     def __str__(self):
         return f"{self.category.name} → {self.name}"
 
 
 
+from django.db import models
+from django.utils.text import slugify
+from django.db.models.signals import pre_save
 
 class News(models.Model):
     title = models.CharField(max_length=100)
-    description = RichTextField()
+    content = RichTextField()
+    description = models.TextField()
+
     region = models.CharField(max_length=100)
     image = models.ImageField(upload_to="Images/News")
     created_date = models.DateTimeField(auto_now_add=True)
     view_count = models.IntegerField(default=0)
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, editable=False)  # Admin panelda o‘zgartirib bo‘lmaydi
 
     def __str__(self):
         return self.title
@@ -35,6 +44,13 @@ class News(models.Model):
     class Meta:
         verbose_name = 'News'
         verbose_name_plural = 'News'
+
+# Slugni avtomatik yangilash
+def set_news_slug(sender, instance, **kwargs):
+    instance.slug = slugify(instance.title)
+
+pre_save.connect(set_news_slug, sender=News)
+
 
 
 class Application(models.Model):

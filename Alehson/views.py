@@ -12,10 +12,17 @@ from .serializers import (
 )
 
 
+
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all().order_by('-id')
     serializer_class = NewsSerializer
-    permission_classes = [permissions.IsAuthenticated]  # CRUD faqat authenticated userlar uchun
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if 'title' in serializer.validated_data:
+            serializer.validated_data['slug'] = slugify(serializer.validated_data['title'])  # Title o‘zgarsa slug ham yangilanadi
+        serializer.save()
 
     @action(detail=True, methods=['POST'])
     def increment_view_count(self, request, pk=None):
@@ -44,7 +51,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 class ImagesViewSet(viewsets.ModelViewSet):
     queryset = Images.objects.all()
     serializer_class = ImagesSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     parser_classes = (MultiPartParser, FormParser)  # Fayl yuklashni qo‘llab-quvvatlash
 
     def create(self, request, *args, **kwargs):
@@ -56,7 +63,7 @@ class ImagesViewSet(viewsets.ModelViewSet):
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.filter(is_active=True).order_by('-petition_id')
     serializer_class = ApplicationSerializer
-    permission_classes = [permissions.IsAuthenticated]  # CRUD faqat authenticated userlar uchun
+    permission_classes = [permissions.AllowAny]  # CRUD faqat authenticated userlar uchun
 
     @action(detail=True, methods=['POST'])
     def increment_view_count(self, request, pk=None):

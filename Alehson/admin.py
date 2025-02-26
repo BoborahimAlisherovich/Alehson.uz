@@ -4,11 +4,27 @@ from django.contrib import admin
 
 from .models import News, Category, SubCategory,Images,Application
 
-@admin.register(News)
-class NewsAdmin(admin.ModelAdmin):
-  list_display = ("title", "region", "created_date",)
-  prepopulated_fields = {"slug": ("title",)}
+# @admin.register(News)
+# class NewsAdmin(admin.ModelAdmin):
+#   list_display = ("title", "region", "created_date",)
+#   prepopulated_fields = {"slug": ("title",)}
 
+
+from django.contrib import admin
+from django.utils.text import slugify
+from .models import News
+
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'region', 'created_date', 'view_count')
+    readonly_fields = ('slug', 'view_count')  # Admin panelda slug va view_count o‘zgartirib bo‘lmaydi
+    fields = ('title', 'description','content', 'region', 'image', 'slug', 'view_count')  # Formaga slugni qo‘shish
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.slug or 'title' in form.changed_data:  # Title o‘zgarganda slug ham yangilansin
+            obj.slug = slugify(obj.title)
+        super().save_model(request, obj, form, change)
+
+admin.site.register(News, NewsAdmin)
 
 
 

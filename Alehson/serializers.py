@@ -18,17 +18,40 @@ class PlasticCardValidator:
         if not re.match(r"^\d{16}$", value):
             raise serializers.ValidationError("Plastik karta raqamini 16 xonali son sifatida kiriting.")
 
+import requests
+from django.core.files.base import ContentFile
 
 class NewsSerializer(serializers.ModelSerializer):
+    image = serializers.CharField(write_only=True)  # Yangi rasm URL qo‘shamiz
+
     class Meta:
         model = News
-        fields = ['id', 'title', 'description', 'region', 'image', 'created_date', 'view_count', 'slug']
-    
+        fields = ['id', 'title', 'description','content', 'region', 'image', 'created_date', 'view_count', 'slug']
+
+    def create(self, validated_data):
+        image_url = validated_data.pop('image', None)
+        news = News.objects.create(**validated_data)
+
+        # URL orqali rasm yuklab olish
+        if image_url:
+            response = requests.get(image_url)
+            if response.status_code == 200:
+                file_name = image_url.split("/")[-1]
+                news.image.save(file_name, ContentFile(response.content), save=True)
+
+        return news
 
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
-        fields = ['id', 'name', 'category']
+        fields = ['id', 'name']
+
+        def validate(self, data):
+            if SubCategory.objects.filter(category=data['category'], name=data['name']).exists():
+                raise serializers.ValidationError({"name": "Bu nom ushbu kategoriya ichida allaqachon mavjud!"})
+            return data
+
+        
 
 
 class CategorySerializer(serializers.ModelSerializer):
