@@ -1,13 +1,22 @@
 from rest_framework import serializers
 from .models import News, Category, SubCategory, Images, Application
 import re
-from datetime import date
+from datetime import date,datetime
 
 
 class BirthDateValidator:
     """Tug‘ilgan sana validatori"""
+    
     def __call__(self, value):
         today = date.today()
+
+        # Sana formatini tekshirish
+        try:
+            datetime.strptime(str(value), "%Y-%m-%d")
+        except ValueError:
+            raise serializers.ValidationError("Tug‘ilgan sana 'YYYY-MM-DD' formatida bo‘lishi kerak.")
+
+        # Kelajak sanani tekshirish
         if value >= today:
             raise serializers.ValidationError("Tug‘ilgan sana kelajak sanasi bo‘lishi mumkin emas.")
 
@@ -44,7 +53,7 @@ class NewsSerializer(serializers.ModelSerializer):
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
-        fields = ['id', 'name']
+        fields = ['id', 'name','category']
 
         def validate(self, data):
             if SubCategory.objects.filter(category=data['category'], name=data['name']).exists():
