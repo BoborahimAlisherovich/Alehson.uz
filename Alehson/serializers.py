@@ -30,25 +30,39 @@ class PlasticCardValidator:
 import requests
 from django.core.files.base import ContentFile
 
+import base64
+import requests
+from django.core.files.base import ContentFile
+from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
+from .models import News
+
 class NewsSerializer(serializers.ModelSerializer):
-    image = serializers.CharField(write_only=True)  # Yangi rasm URL qo‘shamiz
+    image = serializers.CharField(required=False)  # URL yoki Base64 rasm qabul qilish
 
     class Meta:
         model = News
-        fields = ['id', 'title', 'description','content', 'region', 'image', 'created_date', 'view_count', 'slug']
+        fields = ['id', 'title', 'description', 'content', 'region', 'image', 'created_date', 'view_count', 'slug']
 
     def create(self, validated_data):
-        image_url = validated_data.pop('image', None)
+        image_data = validated_data.pop('image', None)
         news = News.objects.create(**validated_data)
 
-        # URL orqali rasm yuklab olish
-        if image_url:
-            response = requests.get(image_url)
-            if response.status_code == 200:
-                file_name = image_url.split("/")[-1]
-                news.image.save(file_name, ContentFile(response.content), save=True)
+        if image_data:
+            if image_data.startswith('http'):  # Agar URL bo'lsa, yuklab olish
+                response = requests.get(image_data)
+                if response.status_code == 200:
+                    file_name = image_data.split("/")[-1]
+                    news.image.save(file_name, ContentFile(response.content), save=True)
+            
+            elif image_data.startswith('data:image'):  # Agar Base64 bo‘lsa, saqlash
+                format, imgstr = image_data.split(';base64,')
+                ext = format.split('/')[-1]
+                file_name = f"news_{news.id}.{ext}"
+                news.image.save(file_name, ContentFile(base64.b64decode(imgstr)), save=True)
 
         return news
+
 
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
