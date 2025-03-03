@@ -13,7 +13,6 @@ from Alehson.views import (
     SubCategoryViewSet,
     ApplicationViewSet,
     ApplicationIsActiveViewSet,
-    ImagesViewSet,
 )
 
 schema_view = get_schema_view(
@@ -61,10 +60,7 @@ urlpatterns = [
     path("application-is-active/<int:pk>/", ApplicationIsActiveViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
     path("application-is-active/<int:pk>/toggle/", ApplicationIsActiveViewSet.as_view({'patch': 'toggle_active_status'})),
 
-    # Images CRUD
-    path("images/", ImagesViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path("images/<int:pk>/", ImagesViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
-
+   
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
