@@ -37,29 +37,68 @@ from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
 from .models import News
 
+
+
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+from .models import News
+import requests
+from django.core.files.base import ContentFile
+import base64
+
+import requests
+import base64
+from django.core.files.base import ContentFile
+from rest_framework import serializers
+from .models import News
+
+import requests
+import base64
+from django.core.files.base import ContentFile
+from rest_framework import serializers
+from .models import News
+
 class NewsSerializer(serializers.ModelSerializer):
-    image = serializers.CharField(required=False)  # URL yoki Base64 rasm qabul qilish
+    image = serializers.CharField(required=False, allow_blank=True)  # URL yoki Base64 qabul qiladi
 
     class Meta:
         model = News
         fields = ['id', 'title', 'description', 'content', 'region', 'image', 'created_date', 'view_count', 'slug']
 
+    def validate_image(self, value):
+        """
+        Rasm URL yoki Base64 bo'lsa, hech qanday muammo bo'lmaydi.
+        Agar multipart/form-data bo'lsa, avtomatik ravishda `ImageField` tomonidan qabul qilinadi.
+        """
+        if value and not (value.startswith('http') or value.startswith('data:image')):
+            raise serializers.ValidationError("Rasm faqat URL yoki Base64 formatda bo‘lishi mumkin.")
+        return value
+
     def create(self, validated_data):
-        image_data = validated_data.pop('image', None)
-        news = News.objects.create(**validated_data)
+        image_data = validated_data.pop('image', None)  # URL yoki Base64 rasm olamiz
+        news = News.objects.create(**validated_data)  # Asosiy yangilikni yaratamiz
 
         if image_data:
-            if image_data.startswith('http'):  # Agar URL bo'lsa, yuklab olish
-                response = requests.get(image_data)
-                if response.status_code == 200:
+            if image_data.startswith('http'):  # URL orqali rasm yuklash
+                try:
+                    response = requests.get(image_data, timeout=5)
+                    response.raise_for_status()
+
                     file_name = image_data.split("/")[-1]
                     news.image.save(file_name, ContentFile(response.content), save=True)
-            
-            elif image_data.startswith('data:image'):  # Agar Base64 bo‘lsa, saqlash
-                format, imgstr = image_data.split(';base64,')
-                ext = format.split('/')[-1]
-                file_name = f"news_{news.id}.{ext}"
-                news.image.save(file_name, ContentFile(base64.b64decode(imgstr)), save=True)
+
+                except requests.exceptions.RequestException:
+                    raise serializers.ValidationError({"image": "Rasm URL yuklab olinmadi."})
+
+            elif image_data.startswith('data:image'):  # Base64 orqali rasm yuklash
+                try:
+                    format, imgstr = image_data.split(';base64,')
+                    ext = format.split('/')[-1]
+                    file_name = f"news_{news.id}.{ext}"
+                    news.image.save(file_name, ContentFile(base64.b64decode(imgstr)), save=True)
+
+                except Exception:
+                    raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
 
         return news
 
@@ -148,3 +187,23 @@ class ApplicationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"passport_number": "Bu pasport raqami bilan allaqachon ariza yaratilgan!"})
 
         return data
+
+
+
+
+class ApplicationIsActiveSerializer(serializers.ModelSerializer):
+    birthday = serializers.DateField(validators=[BirthDateValidator()])
+    plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
+    images = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Application
+        fields = [
+            'petition_id', 'full_name', 'phone_number', 'birthday',
+            'information', 'plastic_card', 'region', 'category',
+            'view_count', 'passport_number', 'is_active', 'images'
+        ]
+
+    def get_images(self, obj):
+        request = self.context.get('request')
+        return [request.build_absolute_uri(image.image.url) for image in obj.images.all()]

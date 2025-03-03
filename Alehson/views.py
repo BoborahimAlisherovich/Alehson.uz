@@ -12,6 +12,7 @@ from .serializers import (
     CategorySerializer,
     SubCategorySerializer,
     ImagesSerializer,
+    ApplicationIsActiveSerializer,
 )
 
 
@@ -26,7 +27,7 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all().order_by('-id')
     serializer_class = NewsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = StandardResultsSetPagination  # Pagination qo'shildi
 
     def perform_update(self, serializer):
@@ -46,13 +47,13 @@ class NewsViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]  
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  
 
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
-    permission_classes = [permissions.IsAuthenticated]  
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  
 
 
 
@@ -68,14 +69,16 @@ class ImagesViewSet(viewsets.ModelViewSet):
         if 'image' not in request.FILES:
             return Response({"error": "Image file required"}, status=status.HTTP_400_BAD_REQUEST)
         return super().create(request, *args, **kwargs)
+    
+
+
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
-    queryset = Application.objects.filter(is_active=True).order_by('-petition_id')
+    queryset = Application.objects.all().order_by('-petition_id')
     serializer_class = ApplicationSerializer
-    permission_classes = [permissions.AllowAny]  
-    pagination_class = StandardResultsSetPagination  # Pagination qo'shildi
-
+    permission_classes = [permissions.AllowAny]
+    pagination_class = StandardResultsSetPagination
 
     @action(detail=True, methods=['POST'])
     def increment_view_count(self, request, pk=None):
@@ -84,3 +87,17 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         application.save()
         return Response({'message': 'View count incremented', 'view_count': application.view_count}, status=status.HTTP_200_OK)
 
+
+
+class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
+    queryset = Application.objects.all().order_by('-petition_id')
+    serializer_class = ApplicationIsActiveSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+
+    @action(detail=True, methods=['PATCH'])
+    def toggle_active_status(self, request, pk=None):
+        application = self.get_object()
+        application.is_active = not application.is_active
+        application.save()
+        return Response({'message': 'Application active status changed', 'is_active': application.is_active}, status=status.HTTP_200_OK)
