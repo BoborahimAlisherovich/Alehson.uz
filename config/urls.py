@@ -40,7 +40,6 @@ urlpatterns = [
     # News CRUD
     path("news/", NewsViewSet.as_view({'get': 'list', 'post': 'create'})),
     path("news/<int:pk>/", NewsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
-    path("news/<int:pk>/increment/", NewsViewSet.as_view({'post': 'increment_view_count'})),
 
     # Categories CRUD
     path("categories/", CategoryViewSet.as_view({'get': 'list', 'post': 'create'})),
