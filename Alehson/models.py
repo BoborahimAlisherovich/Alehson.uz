@@ -2,6 +2,7 @@ from django.db import models
 from ckeditor.fields import RichTextField
 
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to="Images/categories/", blank=True, null=True)
@@ -45,12 +46,20 @@ class News(models.Model):
         verbose_name = 'News'
         verbose_name_plural = 'News'
 
-# Slugni avtomatik yangilash
+from django.core.exceptions import ValidationError
+
+# ✅ Slugni avtomatik yaratish va mavjud slug'ni tekshirish
 def set_news_slug(sender, instance, **kwargs):
-    instance.slug = slugify(instance.title)
+    new_slug = slugify(instance.title)
+
+    # Agar slug allaqachon mavjud bo‘lsa, xatolik qaytarish
+    if News.objects.filter(slug=new_slug).exclude(id=instance.id).exists():
+        raise ValidationError(f"'{new_slug}' slug allaqachon mavjud. Iltimos, boshqa nom tanlang.")
+
+    instance.slug = new_slug
+
 
 pre_save.connect(set_news_slug, sender=News)
-
 
 
 class Application(models.Model):
@@ -65,6 +74,7 @@ class Application(models.Model):
         plastic_card = models.CharField(max_length=16)
         is_active = models.BooleanField(default=False)
         view_count = models.IntegerField(default=0)
+        created_date = models.DateTimeField(auto_now_add=True)
 
         def __str__(self):
             return self.full_name
