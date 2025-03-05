@@ -29,20 +29,22 @@ class PlasticCardValidator:
 
 import requests
 from django.core.files.base import ContentFile
-
-
-
+import base64
+from rest_framework import serializers
+from .models import News
 
 
 import requests
 import base64
+import imghdr
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
 from rest_framework import serializers
 from .models import News
 
+
 class NewsSerializer(serializers.ModelSerializer):
-    image = serializers.CharField(required=False, allow_blank=True)  # URL, Base64 yoki fayl yuklashga ruxsat beradi
+    image = serializers.CharField(required=False, allow_blank=True)  # URL, Base64 yoki fayl yuklashga ruxsat
 
     class Meta:
         model = News
@@ -50,16 +52,16 @@ class NewsSerializer(serializers.ModelSerializer):
 
     def validate_title(self, value):
         """
-        Title asosida slug yaratadi va uning unikalligini tekshiradi.
+        Title asosida slug yaratadi va agar slug mavjud bo'lsa, xatolik qaytaradi.
         """
         new_slug = slugify(value)
         if News.objects.filter(slug=new_slug).exists():
-            raise serializers.ValidationError(f"'{new_slug}' slug allaqachon mavjud. Iltimos, boshqa nom tanlang.")
+            raise serializers.ValidationError(f"'{new_slug}' slug avval yaratilgan. Iltimos, boshqa nom tanlang.")
         return value
 
     def validate_image(self, value):
         """
-        Image maydoni URL, Base64 yoki bo‘sh bo‘lishi mumkin.
+        Rasm URL, Base64 yoki bo‘sh bo‘lishi mumkin.
         """
         if value and not (value.startswith('http') or value.startswith('data:image')):
             raise serializers.ValidationError("Rasm faqat URL yoki Base64 formatda bo‘lishi mumkin.")
@@ -67,38 +69,72 @@ class NewsSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Yangilikni yaratish va image maydonini qayta ishlash.
+        Yangilikni yaratish va rasmni qayta ishlash.
         """
         image_data = validated_data.pop('image', None)  # URL yoki Base64 rasmni ajratib olamiz
-        validated_data['slug'] = slugify(validated_data['title'])  # Slug yaratamiz
-
-        # Slug unikalligini tekshiramiz
-        if News.objects.filter(slug=validated_data['slug']).exists():
-            raise serializers.ValidationError({'slug': f"'{validated_data['slug']}' slug allaqachon mavjud. Iltimos, boshqa nom tanlang."})
+        validated_data['slug'] = self.generate_unique_slug(validated_data['title'])  # Unikal slug yaratamiz
 
         # Yangilikni yaratamiz
         news = News.objects.create(**validated_data)
 
         if image_data:
-            if image_data.startswith('http'):  # URL orqali yuklash
-                try:
-                    response = requests.get(image_data, timeout=5)
-                    response.raise_for_status()
-                    file_name = image_data.split("/")[-1]
-                    news.image.save(file_name, ContentFile(response.content), save=True)
-                except requests.exceptions.RequestException:
-                    raise serializers.ValidationError({"image": "Rasm URL yuklab olinmadi."})
-
-            elif image_data.startswith('data:image'):  # Base64 orqali yuklash
-                try:
-                    format, imgstr = image_data.split(';base64,')
-                    ext = format.split('/')[-1]
-                    file_name = f"news_{news.id}.{ext}"
-                    news.image.save(file_name, ContentFile(base64.b64decode(imgstr)), save=True)
-                except Exception:
-                    raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
+            self.process_image(news, image_data)  # Rasmni qayta ishlaymiz
 
         return news
+
+    def generate_unique_slug(self, title):
+        """
+        Unikal slug yaratadi.
+        """
+        base_slug = slugify(title)
+        slug = base_slug
+        count = 1
+
+        while News.objects.filter(slug=slug).exists():
+            slug = f"{base_slug}-{count}"
+            count += 1
+
+        return slug
+
+    def process_image(self, news, image_data):
+        """
+        URL yoki Base64 orqali yuklangan rasmni fayl sifatida saqlash.
+        """
+        if image_data.startswith('http'):  # URL orqali yuklash
+            self.download_image(news, image_data)
+        elif image_data.startswith('data:image'):  # Base64 orqali yuklash
+            self.decode_base64_image(news, image_data)
+
+    def download_image(self, news, image_url):
+        """
+        URL orqali rasmni yuklab olib saqlash.
+        """
+        try:
+            response = requests.get(image_url, timeout=5)
+            response.raise_for_status()
+            file_extension = imghdr.what(None, h=response.content) or "jpg"
+            file_name = f"news_{news.id}.{file_extension}"
+            news.image.save(file_name, ContentFile(response.content), save=True)
+        except requests.exceptions.RequestException:
+            raise serializers.ValidationError({"image": "Rasm URL yuklab olinmadi."})
+
+    def decode_base64_image(self, news, base64_string):
+        """
+        Base64 rasmni dekodlash va saqlash.
+        """
+        try:
+            format, imgstr = base64_string.split(';base64,')
+            ext = format.split('/')[-1]
+
+            if ext not in ['jpeg', 'jpg', 'png', 'gif', 'webp']:
+                raise serializers.ValidationError({"image": "Yaroqsiz rasm formati."})
+
+            decoded_file = base64.b64decode(imgstr)
+            file_name = f"news_{news.id}.{ext}"
+
+            news.image.save(file_name, ContentFile(decoded_file), save=True)
+        except Exception:
+            raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
@@ -112,44 +148,14 @@ class SubCategorySerializer(serializers.ModelSerializer):
             return data
 
         
-import base64
-import requests
-from django.core.files.base import ContentFile
-from rest_framework import serializers
-from .models import Category, SubCategory
 
-class Base64ImageField(serializers.ImageField):
-    """URL, Base64 yoki oddiy fayl orqali rasm yuklash imkonini beradi."""
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith(('http://', 'https://')):
-            try:
-                response = requests.get(data, timeout=5)
-                response.raise_for_status()
-                file_name = data.split("/")[-1]  # URLdan fayl nomini olish
-                data = ContentFile(response.content, name=file_name)
-            except requests.RequestException as e:
-                raise serializers.ValidationError(f"URL orqali rasm yuklab bo‘lmadi: {e}")
-
-        elif isinstance(data, str) and data.startswith('data:image'):
-            try:
-                format, imgstr = data.split(';base64,')  
-                ext = format.split('/')[-1]  
-                data = ContentFile(base64.b64decode(imgstr), name=f"temp.{ext}")
-            except Exception:
-                raise serializers.ValidationError("Base64 format noto‘g‘ri!")
-
-        return super().to_internal_value(data)
 
 class CategorySerializer(serializers.ModelSerializer):
-    image = Base64ImageField(required=False)  # URL, Base64 yoki oddiy fayl yuklashni qo‘llaydi
-    subcategories = serializers.PrimaryKeyRelatedField(many=True, read_only=True)  # ✅ Kiritish shart emas
+    subcategories = SubCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Category
         fields = ['id', 'name', 'image', 'subcategories']
-
-
-
 
 from rest_framework import serializers
 from .models import Application, Images
@@ -179,14 +185,13 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     # GET qilish uchun rasmlar ro‘yxat shaklida chiqadi
     images = serializers.SerializerMethodField()
-    created_date = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Application
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday',
             'information', 'plastic_card', 'region', 'category',
-            'view_count', 'passport_number', 'image_urls', 'images','created_date'
+            'view_count', 'passport_number', 'image_urls', 'images'
         ]
 
     def get_images(self, obj):
@@ -216,8 +221,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"passport_number": "Bu pasport raqami bilan allaqachon ariza yaratilgan!"})
 
         return data
-    def get_created_date(self, obj):
-        return obj.created_date.strftime('%Y-%m-%d %H:%M:%S')  # Sanani formatlash
 
 
 
@@ -226,18 +229,17 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(validators=[BirthDateValidator()])
     plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
     images = serializers.SerializerMethodField()
-    created_date = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Application
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday',
             'information', 'plastic_card', 'region', 'category',
-            'view_count', 'passport_number', 'is_active', 'images','created_date'
+            'view_count', 'passport_number', 'is_active', 'images'
         ]
 
     def get_images(self, obj):
         request = self.context.get('request')
         return [request.build_absolute_uri(image.image.url) for image in obj.images.all()]
-    def get_created_date(self, obj):
-        return obj.created_date.strftime('%Y-%m-%d %H:%M:%S')  # Sanani formatlash
+    
+
