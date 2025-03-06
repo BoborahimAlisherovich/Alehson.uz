@@ -135,44 +135,76 @@ class NewsSerializer(serializers.ModelSerializer):
             news.image.save(file_name, ContentFile(decoded_file), save=True)
         except Exception:
             raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
+import base64
+import requests
+import imghdr
+from django.core.files.base import ContentFile
+from rest_framework import serializers
+from .models import SubCategory
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
-    image = serializers.CharField(required=False, allow_blank=True)  # URL yoki Base64 yuklash mumkin
+    image = serializers.CharField(required=False, allow_blank=True)  # URL yoki Base64 formatda yuklash uchun
+    image_file = serializers.ImageField(required=False)  # Media form orqali yuklash uchun
 
     class Meta:
         model = SubCategory
-        fields = ['id', 'name', 'image', 'category']
-
-    def validate(self, data):
-        if SubCategory.objects.filter(category=data['category'], name=data['name']).exists():
-            raise serializers.ValidationError({"name": "Bu nom ushbu kategoriya ichida allaqachon mavjud!"})
-        return data
+        fields = ['id', 'name', 'image', 'image_file', 'category']
 
     def validate_image(self, value):
         """
-        Rasm URL yoki Base64 formatda bo‘lishi kerak.
+        Rasm URL yoki Base64 bo‘lishi mumkin.
         """
         if value and not (value.startswith('http') or value.startswith('data:image')):
             raise serializers.ValidationError("Rasm faqat URL yoki Base64 formatda bo‘lishi mumkin.")
         return value
 
     def create(self, validated_data):
-        image_data = validated_data.pop('image', None)  # URL yoki Base64 rasmni ajratib olamiz
+        """
+        SubCategory yaratish va rasmni qayta ishlash.
+        """
+        image_data = validated_data.pop('image', None)  # URL yoki Base64
+        image_file = validated_data.pop('image_file', None)  # Media form orqali yuklangan rasm
+
+        # SubCategory yaratamiz
         subcategory = SubCategory.objects.create(**validated_data)
 
-        if image_data:
-            self.process_image(subcategory, image_data)  # Rasmni qayta ishlaymiz
+        if image_file:
+            subcategory.image = image_file  # Media form orqali yuklangan rasm
+            subcategory.save()
+
+        elif image_data:
+            self.process_image(subcategory, image_data)  # URL yoki Base64 rasmni qayta ishlaymiz
 
         return subcategory
+
+    def update(self, instance, validated_data):
+        """
+        SubCategory yangilash va rasmni qayta ishlash.
+        """
+        image_data = validated_data.pop('image', None)
+        image_file = validated_data.pop('image_file', None)
+
+        # Ma'lumotlarni yangilaymiz
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if image_file:
+            instance.image = image_file
+            instance.save()
+        elif image_data:
+            self.process_image(instance, image_data)  # Yangi rasm yuklash
+
+        return instance
 
     def process_image(self, subcategory, image_data):
         """
         URL yoki Base64 orqali yuklangan rasmni fayl sifatida saqlash.
         """
-        if image_data.startswith('http'):
+        if image_data.startswith('http'):  # URL orqali yuklash
             self.download_image(subcategory, image_data)
-        elif image_data.startswith('data:image'):
+        elif image_data.startswith('data:image'):  # Base64 orqali yuklash
             self.decode_base64_image(subcategory, image_data)
 
     def download_image(self, subcategory, image_url):
@@ -205,7 +237,6 @@ class SubCategorySerializer(serializers.ModelSerializer):
             subcategory.image.save(file_name, ContentFile(decoded_file), save=True)
         except Exception:
             raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
-
 
 class CategorySerializer(serializers.ModelSerializer):
     subcategories = SubCategorySerializer(many=True, read_only=True)
