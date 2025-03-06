@@ -138,16 +138,73 @@ class NewsSerializer(serializers.ModelSerializer):
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
+    image = serializers.CharField(required=False, allow_blank=True)  # URL yoki Base64 yuklash mumkin
+
     class Meta:
         model = SubCategory
-        fields = ['id', 'name','image','category']
+        fields = ['id', 'name', 'image', 'category']
 
-        def validate(self, data):
-            if SubCategory.objects.filter(category=data['category'], name=data['name']).exists():
-                raise serializers.ValidationError({"name": "Bu nom ushbu kategoriya ichida allaqachon mavjud!"})
-            return data
+    def validate(self, data):
+        if SubCategory.objects.filter(category=data['category'], name=data['name']).exists():
+            raise serializers.ValidationError({"name": "Bu nom ushbu kategoriya ichida allaqachon mavjud!"})
+        return data
 
-        
+    def validate_image(self, value):
+        """
+        Rasm URL yoki Base64 formatda bo‘lishi kerak.
+        """
+        if value and not (value.startswith('http') or value.startswith('data:image')):
+            raise serializers.ValidationError("Rasm faqat URL yoki Base64 formatda bo‘lishi mumkin.")
+        return value
+
+    def create(self, validated_data):
+        image_data = validated_data.pop('image', None)  # URL yoki Base64 rasmni ajratib olamiz
+        subcategory = SubCategory.objects.create(**validated_data)
+
+        if image_data:
+            self.process_image(subcategory, image_data)  # Rasmni qayta ishlaymiz
+
+        return subcategory
+
+    def process_image(self, subcategory, image_data):
+        """
+        URL yoki Base64 orqali yuklangan rasmni fayl sifatida saqlash.
+        """
+        if image_data.startswith('http'):
+            self.download_image(subcategory, image_data)
+        elif image_data.startswith('data:image'):
+            self.decode_base64_image(subcategory, image_data)
+
+    def download_image(self, subcategory, image_url):
+        """
+        URL orqali rasmni yuklab olib saqlash.
+        """
+        try:
+            response = requests.get(image_url, timeout=5)
+            response.raise_for_status()
+            file_extension = imghdr.what(None, h=response.content) or "jpg"
+            file_name = f"subcategory_{subcategory.id}.{file_extension}"
+            subcategory.image.save(file_name, ContentFile(response.content), save=True)
+        except requests.exceptions.RequestException:
+            raise serializers.ValidationError({"image": "Rasm URL yuklab olinmadi."})
+
+    def decode_base64_image(self, subcategory, base64_string):
+        """
+        Base64 rasmni dekodlash va saqlash.
+        """
+        try:
+            format, imgstr = base64_string.split(';base64,')
+            ext = format.split('/')[-1]
+
+            if ext not in ['jpeg', 'jpg', 'png', 'gif', 'webp']:
+                raise serializers.ValidationError({"image": "Yaroqsiz rasm formati."})
+
+            decoded_file = base64.b64decode(imgstr)
+            file_name = f"subcategory_{subcategory.id}.{ext}"
+
+            subcategory.image.save(file_name, ContentFile(decoded_file), save=True)
+        except Exception:
+            raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
 
 
 class CategorySerializer(serializers.ModelSerializer):
