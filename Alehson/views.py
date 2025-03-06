@@ -42,20 +42,19 @@ class NewsViewSet(viewsets.ModelViewSet):
         news.view_count += 1
         news.save()
         return Response({'message': 'View count incremented', 'view_count': news.view_count}, status=status.HTTP_200_OK)
-
+from rest_framework import viewsets, permissions
+from .models import Category, SubCategory
+from .serializers import CategorySerializer, SubCategorySerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]  
 
-
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]  
-
-
 
 
 

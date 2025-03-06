@@ -140,7 +140,7 @@ class NewsSerializer(serializers.ModelSerializer):
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
-        fields = ['id', 'name','category']
+        fields = ['id', 'name','image','category']
 
         def validate(self, data):
             if SubCategory.objects.filter(category=data['category'], name=data['name']).exists():
