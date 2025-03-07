@@ -1,7 +1,6 @@
 from django.db import models
 from ckeditor.fields import RichTextField
-from hitcount.models import HitCount,HitCountMixin
-from django.contrib.contenttypes.fields import GenericRelation
+
 
 
 class Category(models.Model):
@@ -75,7 +74,7 @@ class Application(models.Model):
         information = models.TextField()
         plastic_card = models.CharField(max_length=16)
         is_active = models.BooleanField(default=False)
-        view_count = GenericRelation(HitCount, object_id_field='object_pk',related_query_name='hit_count_generic_relation')
+        view_count = models.IntegerField(default=0)
         created_date = models.DateTimeField(auto_now_add=True)
 
         def __str__(self):
@@ -83,7 +82,6 @@ class Application(models.Model):
         
     # def user_directory_path(instance, filename): 
     #     return 'images/{0}/{1}'.format(instance.application.petition_id, filename) 
-
 
 
 

@@ -71,63 +71,21 @@ class ImagesViewSet(viewsets.ModelViewSet):
     
 
 
-from django.core.cache import cache
-from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from .models import Application
-from .serializers import ApplicationSerializer, ApplicationIsActiveSerializer
-# from .pagination import StandardResultsSetPagination
+
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
-
-    @action(detail=True, methods=['POST'])
-    def increment_view_count(self, request, pk=None):
-        application = self.get_object()
-        user_ip = self.get_client_ip(request)  # IP manzilni olish
-        cache_key = f"viewed_application_{application.id}"  # IP-manzilni emas, faqat IDni saqlaymiz
-        
-        # Cache-da ushbu application uchun unikal IP-lar ro‘yxati saqlanadi
-        viewed_ips = cache.get(cache_key, set())  # Agar oldin mavjud bo‘lmasa, bo‘sh `set()` qaytaradi
-
-        if user_ip not in viewed_ips:
-            application.view_count += 1
-            application.save(update_fields=["view_count"])
-
-            # Unikal IP-ni ro‘yxatga qo‘shamiz va yangilaymiz
-            viewed_ips.add(user_ip)
-            cache.set(cache_key, viewed_ips, timeout=86400)  # 24 soat saqlanadi
-
-        return Response({'message': 'View count incremented', 'view_count': application.view_count}, status=status.HTTP_200_OK)
-
-    def get_client_ip(self, request):
-        """ Foydalanuvchining IP manzilini olish """
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-        return ip
-
-
-# class ApplicationViewSet(viewsets.ModelViewSet):
-#     queryset = Application.objects  .all().order_by('-petition_id')
-#     serializer_class = ApplicationSerializer
-#     permission_classes = [permissions.AllowAny]
-#     pagination_class = StandardResultsSetPagination
-
-#     @action(detail=True, methods=['POST'])
-#     def increment_view_count(self, request, pk=None):
-#         application = self.get_object()
-#         application.view_count += 1
-#         application.save()
-#         return Response({'message': 'View count incremented', 'view_count': application.view_count}, status=status.HTTP_200_OK)
-
-
+    def get(self, request):
+        obj = self.get_object
+        print(obj)
+        obj.view_count = obj.view_count + 1
+        obj.save(view_count="view_count")
+        return super().get(request)
+    
+  
 
 class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')

@@ -258,24 +258,24 @@ class ImagesSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
-    birthday = serializers.DateField(validators=[BirthDateValidator()])
-    plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
-
-    # Foydalanuvchi POST qilish uchun URL jo‘natishi mumkin
+    birthday = serializers.DateField(validators=[BirthDateValidator])
+    plastic_card = serializers.CharField(validators=[PlasticCardValidator])
     image_urls = serializers.ListField(
         child=serializers.URLField(), write_only=True, required=False
     )
-
-    # GET qilish uchun rasmlar ro‘yxat shaklida chiqadi
     images = serializers.SerializerMethodField()
+    # view_count = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
 
     class Meta:
         model = Application
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday',
             'information', 'plastic_card', 'region', 'category',
-            'view_count', 'passport_number' ,'created_date', 'image_urls', 'images'
+            'view_count', 'passport_number', 'created_date', 'image_urls', 'images'
         ]
+    
+    
+        
 
     def get_images(self, obj):
         """Arizaga tegishli rasmlarni to'liq URL shaklida ro‘yxat qilib chiqaradi"""
