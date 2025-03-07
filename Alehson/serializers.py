@@ -40,10 +40,15 @@ from .models import News
 
 class NewsSerializer(serializers.ModelSerializer):
     image = serializers.CharField(required=False, allow_blank=True)  # URL, Base64 yoki fayl yuklashga ruxsat
+    view_count = serializers.SerializerMethodField()
 
     class Meta:
         model = News
         fields = ['id', 'title', 'description', 'content', 'region', 'image', 'created_date', 'view_count', 'slug']
+
+    def get_view_count(self, obj):
+        """View count qiymatini qaytarish"""
+        return obj.view_count
 
     def validate_title(self, value):
         """
@@ -264,8 +269,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
         child=serializers.URLField(), write_only=True, required=False
     )
     images = serializers.SerializerMethodField()
-    # view_count = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-
+    view_count = serializers.SerializerMethodField()
     class Meta:
         model = Application
         fields = [
@@ -275,7 +279,9 @@ class ApplicationSerializer(serializers.ModelSerializer):
         ]
     
     
-        
+    def get_view_count(self, obj):
+        """View count qiymatini qaytarish"""
+        return obj.view_count
 
     def get_images(self, obj):
         """Arizaga tegishli rasmlarni to'liq URL shaklida ro‘yxat qilib chiqaradi"""
@@ -320,6 +326,7 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
             'information', 'plastic_card', 'region', 'category',
             'view_count', 'passport_number', 'is_active','created_date','images'
         ]
+
 
     def get_images(self, obj):
         request = self.context.get('request')

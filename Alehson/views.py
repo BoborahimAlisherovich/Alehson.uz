@@ -24,11 +24,14 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'  # Foydalanuvchi query orqali o'zgartirishi mumkin
     max_page_size = 100  # Maksimal sahifa hajmi
 
-class NewsViewSet(viewsets.ModelViewSet):
+
+from hitcount.views import HitCountMixin
+
+class NewsViewSet(viewsets.ModelViewSet, HitCountMixin):
     queryset = News.objects.all().order_by('-id')
     serializer_class = NewsSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = StandardResultsSetPagination  # Pagination qo'shildi
+    pagination_class = StandardResultsSetPagination  
 
     def perform_update(self, serializer):
         instance = self.get_object()
@@ -36,12 +39,18 @@ class NewsViewSet(viewsets.ModelViewSet):
             serializer.validated_data['slug'] = slugify(serializer.validated_data['title'])
         serializer.save()
 
-    @action(detail=True, methods=['POST'])
-    def increment_view_count(self, request, pk=None):
-        news = self.get_object()
-        news.view_count += 1
-        news.save()
-        return Response({'message': 'View count incremented', 'view_count': news.view_count}, status=status.HTTP_200_OK)
+    def retrieve(self, request, *args, **kwargs):
+        obj = self.get_object()
+        
+        # Hitcount modelidan foydalanib noyob ko‘rishlarni hisoblash
+        hit_count = get_hitcount_model().objects.get_for_object(obj)
+        self.hit_count(request, hit_count)  # Foydalanuvchini noyob hisoblash
+        
+        obj.view_count = hit_count.hits  # Umumiy noyob ko‘rishlar sonini olish
+        obj.save(update_fields=["view_count"])
+
+        return super().retrieve(request, *args, **kwargs)
+
 from rest_framework import viewsets, permissions
 from .models import Category, SubCategory
 from .serializers import CategorySerializer, SubCategorySerializer
@@ -71,21 +80,31 @@ class ImagesViewSet(viewsets.ModelViewSet):
     
 
 
+from rest_framework.response import Response
+from rest_framework import status
+from hitcount.utils import get_hitcount_model
+from hitcount.views import HitCountMixin
+from rest_framework import viewsets, permissions
 
-
-class ApplicationViewSet(viewsets.ModelViewSet):
+class ApplicationViewSet(viewsets.ModelViewSet, HitCountMixin):
     queryset = Application.objects.all().order_by('-petition_id')
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
-    def get(self, request):
-        obj = self.get_object
-        print(obj)
-        obj.view_count = obj.view_count + 1
-        obj.save(view_count="view_count")
-        return super().get(request)
-    
-  
+    # lookup_field = 'petition_id'
+
+    def retrieve(self, request, *args, **kwargs):
+        obj = self.get_object()
+        
+        # Hitcount modelidan foydalanib noyob ko‘rishlarni hisoblash
+        hit_count = get_hitcount_model().objects.get_for_object(obj)
+        self.hit_count(request, hit_count)  # Foydalanuvchini noyob hisoblash
+        
+        obj.view_count = hit_count.hits  # Umumiy noyob ko‘rishlar sonini olish
+        obj.save(update_fields=["view_count"])
+
+        return super().retrieve(request, *args, **kwargs)
+
 
 class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')
