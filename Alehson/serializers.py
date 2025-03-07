@@ -27,11 +27,6 @@ class PlasticCardValidator:
         if not re.match(r"^\d{16}$", value):
             raise serializers.ValidationError("Plastik karta raqamini 16 xonali son sifatida kiriting.")
 
-import requests
-from django.core.files.base import ContentFile
-import base64
-from rest_framework import serializers
-from .models import News
 
 
 import requests
@@ -279,7 +274,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday',
             'information', 'plastic_card', 'region', 'category',
-            'view_count', 'passport_number', 'image_urls', 'images'
+            'view_count', 'passport_number' ,'created_date', 'image_urls', 'images'
         ]
 
     def get_images(self, obj):
@@ -323,7 +318,7 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday',
             'information', 'plastic_card', 'region', 'category',
-            'view_count', 'passport_number', 'is_active', 'images'
+            'view_count', 'passport_number', 'is_active','created_date','images'
         ]
 
     def get_images(self, obj):
