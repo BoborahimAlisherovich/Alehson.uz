@@ -41,15 +41,10 @@ class NewsViewSet(viewsets.ModelViewSet, HitCountMixin):
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
-        
-        # Hitcount modelidan foydalanib noyob ko‘rishlarni hisoblash
-        hit_count = get_hitcount_model().objects.get_for_object(obj)
-        self.hit_count(request, hit_count)  # Foydalanuvchini noyob hisoblash
-        
-        obj.view_count = hit_count.hits  # Umumiy noyob ko‘rishlar sonini olish
-        obj.save(update_fields=["view_count"])
-
+        obj.view_count = obj.view_count + 1  # Yangi qiymatni tayin qilamiz
+        obj.save()
         return super().retrieve(request, *args, **kwargs)
+
 
 from rest_framework import viewsets, permissions
 from .models import Category, SubCategory
@@ -86,25 +81,18 @@ from hitcount.utils import get_hitcount_model
 from hitcount.views import HitCountMixin
 from rest_framework import viewsets, permissions
 
-class ApplicationViewSet(viewsets.ModelViewSet, HitCountMixin):
+class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
-    # lookup_field = 'petition_id'
+    # lookup_field = '  petition_id'
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
-        
-        # Hitcount modelidan foydalanib noyob ko‘rishlarni hisoblash
-        hit_count = get_hitcount_model().objects.get_for_object(obj)
-        self.hit_count(request, hit_count)  # Foydalanuvchini noyob hisoblash
-        
-        obj.view_count = hit_count.hits  # Umumiy noyob ko‘rishlar sonini olish
-        obj.save(update_fields=["view_count"])
-
+        obj.view_count = obj.view_count + 1  # Yangi qiymatni tayin qilamiz
+        obj.save()
         return super().retrieve(request, *args, **kwargs)
-
 
 class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')

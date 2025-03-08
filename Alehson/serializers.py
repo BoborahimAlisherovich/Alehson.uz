@@ -263,8 +263,9 @@ class ImagesSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
-    birthday = serializers.DateField(validators=[BirthDateValidator])
-    plastic_card = serializers.CharField(validators=[PlasticCardValidator])
+    birthday = serializers.DateField(validators=[BirthDateValidator()])
+    plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
+
     image_urls = serializers.ListField(
         child=serializers.URLField(), write_only=True, required=False
     )

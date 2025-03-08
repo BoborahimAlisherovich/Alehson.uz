@@ -39,11 +39,12 @@ class News(models.Model):
     image = models.ImageField(upload_to="Images/News")
     created_date = models.DateTimeField(auto_now_add=True)
     view_count = models.IntegerField(default=0)
-    hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
+    # hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
 
     slug = models.SlugField(max_length=100, unique=True, editable=False)  # Admin panelda o‘zgartirib bo‘lmaydi
 
     def __str__(self):
+        
         return self.title
 
     class Meta:
@@ -66,7 +67,7 @@ def set_news_slug(sender, instance, **kwargs):
 pre_save.connect(set_news_slug, sender=News)
 
 
-class Application(models.Model,HitCountMixin):
+class Application(models.Model):
         petition_id = models.AutoField(primary_key=True)
         full_name = models.CharField(max_length=100)
         phone_number = models.CharField(max_length=13)
@@ -79,7 +80,6 @@ class Application(models.Model,HitCountMixin):
         is_active = models.BooleanField(default=False)
         view_count = models.IntegerField(default=0)
         created_date = models.DateTimeField(auto_now_add=True)
-        hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
 
         def __str__(self):
             return self.full_name
