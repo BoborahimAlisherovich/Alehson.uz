@@ -2,6 +2,12 @@ from rest_framework import serializers
 from .models import News, Category, SubCategory, Images, Application
 import re
 from datetime import date,datetime
+import base64
+import requests
+import imghdr
+from django.core.files.base import ContentFile
+from django.utils.text import slugify
+
 
 
 class BirthDateValidator:
@@ -29,13 +35,6 @@ class PlasticCardValidator:
 
 
 
-import requests
-import base64
-import imghdr
-from django.core.files.base import ContentFile
-from django.utils.text import slugify
-from rest_framework import serializers
-from .models import News
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -135,13 +134,6 @@ class NewsSerializer(serializers.ModelSerializer):
             news.image.save(file_name, ContentFile(decoded_file), save=True)
         except Exception:
             raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
-import base64
-import requests
-import imghdr
-from django.core.files.base import ContentFile
-from rest_framework import serializers
-from .models import SubCategory
-
 
 class SubCategorySerializer(serializers.ModelSerializer):
     image = serializers.CharField(required=False, allow_blank=True)  # URL yoki Base64 formatda yuklash uchun
