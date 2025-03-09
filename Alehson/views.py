@@ -76,8 +76,9 @@ class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
-    filterset_fields = ['is_active']
+    # filterset_fields = ['is_active']
     # lookup_field = 'petition_id'
+
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()

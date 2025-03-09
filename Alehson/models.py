@@ -34,13 +34,10 @@ class News(models.Model):
     title = models.CharField(max_length=100)
     content = RichTextField()
     description = models.TextField()
-
     region = models.CharField(max_length=100)
     image = models.ImageField(upload_to="Images/News")
     created_date = models.DateTimeField(auto_now_add=True)
     view_count = models.IntegerField(default=0)
-    # hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
-
     slug = models.SlugField(max_length=100, unique=True, editable=False)  # Admin panelda o‘zgartirib bo‘lmaydi
 
     def __str__(self):
@@ -84,9 +81,6 @@ class Application(models.Model):
         def __str__(self):
             return self.full_name
         
-    # def user_directory_path(instance, filename): 
-    #     return 'images/{0}/{1}'.format(instance.application.petition_id, filename) 
-
 
 
 class Images(models.Model):

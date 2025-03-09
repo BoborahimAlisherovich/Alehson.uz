@@ -236,7 +236,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name', 'image', 'subcategories']
-
+        
 from rest_framework import serializers
 from .models import Application, Images
 
@@ -253,7 +253,6 @@ class ImagesSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         return request.build_absolute_uri(instance.image.url) if instance.image else None
 
-
 class ApplicationSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(validators=[BirthDateValidator()])
     plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
@@ -263,6 +262,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     )
     images = serializers.SerializerMethodField()
     view_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Application
         fields = [
@@ -270,8 +270,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'information', 'plastic_card', 'region', 'category',
             'view_count', 'passport_number', 'created_date', 'image_urls', 'images'
         ]
-    
-    
+
     def get_view_count(self, obj):
         """View count qiymatini qaytarish"""
         return obj.view_count
@@ -304,7 +303,11 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
         return data
 
-
+    def to_representation(self, instance):
+        """is_active=False bo'lgan obyektlarni chiqarib tashlash"""
+        if not instance.is_active:
+            return None
+        return super().to_representation(instance)
 
 
 class ApplicationIsActiveSerializer(serializers.ModelSerializer):
@@ -317,12 +320,9 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday',
             'information', 'plastic_card', 'region', 'category',
-            'view_count', 'passport_number', 'is_active','created_date','images'
+            'view_count', 'passport_number', 'is_active', 'created_date', 'images'
         ]
-
 
     def get_images(self, obj):
         request = self.context.get('request')
         return [request.build_absolute_uri(image.image.url) for image in obj.images.all()]
-    
-
