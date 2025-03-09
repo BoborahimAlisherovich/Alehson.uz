@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from .models import News, Application, Images, Category, SubCategory
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import pagination
-
+from django.utils.text import slugify
+from hitcount.views import HitCountMixin
 
 from .serializers import (
     NewsSerializer,
@@ -25,7 +26,6 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
     max_page_size = 100  # Maksimal sahifa hajmi
 
 
-from hitcount.views import HitCountMixin
 
 class NewsViewSet(viewsets.ModelViewSet, HitCountMixin):
     queryset = News.objects.all().order_by('-id')
@@ -45,10 +45,6 @@ class NewsViewSet(viewsets.ModelViewSet, HitCountMixin):
         obj.save()
         return super().retrieve(request, *args, **kwargs)
 
-
-from rest_framework import viewsets, permissions
-from .models import Category, SubCategory
-from .serializers import CategorySerializer, SubCategorySerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -75,22 +71,17 @@ class ImagesViewSet(viewsets.ModelViewSet):
     
 
 
-from rest_framework.response import Response
-from rest_framework import status
-from hitcount.utils import get_hitcount_model
-from hitcount.views import HitCountMixin
-from rest_framework import viewsets, permissions
-
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
-    # lookup_field = '  petition_id'
+    filterset_fields = ['is_active']
+    # lookup_field = 'petition_id'
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
-        obj.view_count = obj.view_count + 1  # Yangi qiymatni tayin qilamiz
+        obj.view_count = obj.view_count + 1 
         obj.save()
         return super().retrieve(request, *args, **kwargs)
 
