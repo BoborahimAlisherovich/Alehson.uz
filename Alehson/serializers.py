@@ -371,7 +371,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = [
-            'petition_id', 'full_name', 'phone_number', 'birthday',
+            'petition_id', 'full_name', 'phone_number', 'birthday',"is_top"
             'information', 'plastic_card', 'region', 'category',
             'view_count', 'passport_number', 'created_date', 'image_urls', 'images'
         ]
@@ -409,10 +409,19 @@ class ApplicationSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        """ Agar `is_active=False` bo‘lsa, `None` qaytariladi """
+        representation = super().to_representation(instance)
+
         if not instance.is_active:
-            return None  # DRF buni `null` sifatida qaytaradi
-        return super().to_representation(instance)
+            return None 
+        return representation
+       
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if not instance.is_active:
+            return None 
+        return representation
+    
 class ApplicationIsActiveSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(validators=[BirthDateValidator()])
     plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
@@ -421,7 +430,7 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = [
-            'petition_id', 'full_name', 'phone_number', 'birthday',
+            'petition_id', 'full_name', 'phone_number', 'birthday','is_top'
             'information', 'plastic_card', 'region', 'category',
             'view_count', 'passport_number', 'is_active', 'created_date', 'images'
         ]

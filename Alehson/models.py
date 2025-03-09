@@ -75,6 +75,7 @@ class Application(models.Model):
         information = models.TextField()
         plastic_card = models.CharField(max_length=16)
         is_active = models.BooleanField(default=False)
+        is_top = models.BooleanField(default=False)
         view_count = models.IntegerField(default=0)
         created_date = models.DateTimeField(auto_now_add=True)
 
