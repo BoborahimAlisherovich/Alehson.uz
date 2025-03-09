@@ -85,6 +85,11 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         obj.view_count = obj.view_count + 1 
         obj.save()
         return super().retrieve(request, *args, **kwargs)
+    # def create(self, request, *args, **kwargs):
+    #     response = super().create(request, *args, **kwargs)
+    #     if not response.data.get('is_active', True):  
+    #         return Response(status=status.HTTP_201_CREATED)  # Javob bo‘sh bo‘ladi, lekin xato chiqmaydi
+    #     return response
 
 class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')
