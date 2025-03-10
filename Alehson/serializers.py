@@ -44,7 +44,10 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields = ['id', 'title', 'description', 'content', 'region', 'image', 'created_date', 'slug']
+        fields = ['id', 'title', 'description', 'content', 'region', 'image','view_count', 'created_date', 'slug']
+    def get_view_count(self, obj):
+        """View count qiymatini qaytarish"""
+        return obj.view_count
 
     def validate_image(self, value):
         """
@@ -54,12 +57,24 @@ class NewsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Rasm faqat URL yoki Base64 formatda bo‘lishi mumkin.")
         return value
 
+    def validate_title(self, value):
+        """
+        Agar ushbu sarlavha bilan yangilik allaqachon mavjud bo‘lsa, xatolik qaytaradi.
+        """
+        if News.objects.filter(title=value).exists():
+            raise serializers.ValidationError("Bu sarlavha bilan yangilik allaqachon mavjud.")
+        return value
+
     def create(self, validated_data):
         """
         Yangilikni yaratish va rasmni qayta ishlash.
         """
         image_data = validated_data.pop('image', None)
         validated_data['slug'] = self.generate_unique_slug(validated_data['title'])
+
+        # Agar slug allaqachon mavjud bo'lsa, xatolik qaytarish
+        if News.objects.filter(slug=validated_data['slug']).exists():
+            raise serializers.ValidationError({"slug": "Bu sarlavha bilan yangilik allaqachon mavjud."})
 
         news = News.objects.create(**validated_data)
 
