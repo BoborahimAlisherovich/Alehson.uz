@@ -72,7 +72,7 @@ class ImagesViewSet(viewsets.ModelViewSet):
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
-    queryset = Application.objects.all().order_by('-petition_id')
+    queryset = Application.objects.filter(is_active=True).order_by('-petition_id')
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
@@ -85,6 +85,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         obj.view_count = obj.view_count + 1 
         obj.save()
         return super().retrieve(request, *args, **kwargs)
+    
     # def create(self, request, *args, **kwargs):
     #     response = super().create(request, *args, **kwargs)
     #     if not response.data.get('is_active', True):  

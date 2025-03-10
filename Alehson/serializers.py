@@ -7,6 +7,8 @@ import requests
 import imghdr
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
+from io import BytesIO
+from PIL import Image
 
 
 
@@ -35,18 +37,6 @@ class PlasticCardValidator:
 
 
 
-
-from rest_framework import serializers
-from .models import News, Category, SubCategory, Images, Application
-import re
-import base64
-import requests
-import imghdr
-from io import BytesIO
-from datetime import date, datetime
-from django.core.files.base import ContentFile
-from django.utils.text import slugify
-from PIL import Image
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -341,8 +331,6 @@ class CategorySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"image": "Base64 formatda xatolik bor."})
 
         
-from rest_framework import serializers
-from .models import Application, Images
 
 class ImagesSerializer(serializers.ModelSerializer):
     """Ariza bilan bog‘liq rasmlar"""
@@ -358,6 +346,14 @@ class ImagesSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(instance.image.url) if instance.image else None
 from rest_framework.serializers import SkipField
 
+# class FilteredListSerializer(serializers.ListSerializer):
+#     def to_representation(self, data):
+#         # Agar bu queryset bo'lsa, faqat is_active=True bo'lgan obyektlarni filtrlaymiz
+#         if not isinstance(data, list):
+#             data = data.filter(is_active=False)  # Faqat is_active=True bo'lgan obyektlarni filtrlash
+#         return super().to_representation(data)
+
+
 class ApplicationSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(validators=[BirthDateValidator()])
     plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
@@ -370,8 +366,9 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
+        # list_serializer_class = FilteredListSerializer  # FilteredListSerializer ni qo'shamiz
         fields = [
-            'petition_id', 'full_name', 'phone_number', 'birthday',"is_top"
+            'petition_id', 'full_name', 'phone_number', 'birthday', "is_top",
             'information', 'plastic_card', 'region', 'category',
             'view_count', 'passport_number', 'created_date', 'image_urls', 'images'
         ]
@@ -379,7 +376,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     def get_view_count(self, obj):
         """View count qiymatini qaytarish"""
         return obj.view_count
-
+    
     def get_images(self, obj):
         """Arizaga tegishli rasmlarni to'liq URL shaklida ro‘yxat qilib chiqaradi"""
         request = self.context.get('request')
@@ -408,20 +405,15 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
         return data
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
 
-        if not instance.is_active:
-            return None 
-        return representation
-       
-    
     def to_representation(self, instance):
+        # faqat is_active=True bo'lgan obyektlarni qaytarish
         representation = super().to_representation(instance)
         if not instance.is_active:
-            return None 
+            pass
         return representation
-    
+
+
 class ApplicationIsActiveSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(validators=[BirthDateValidator()])
     plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
@@ -430,7 +422,7 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = [
-            'petition_id', 'full_name', 'phone_number', 'birthday','is_top'
+            'petition_id', 'full_name', 'phone_number', 'birthday', 'is_top',
             'information', 'plastic_card', 'region', 'category',
             'view_count', 'passport_number', 'is_active', 'created_date', 'images'
         ]
