@@ -76,9 +76,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = StandardResultsSetPagination
-    # filterset_fields = ['is_active']
-    # lookup_field = 'petition_id'
-
+ 
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -86,11 +84,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         obj.save()
         return super().retrieve(request, *args, **kwargs)
     
-    # def create(self, request, *args, **kwargs):
-    #     response = super().create(request, *args, **kwargs)
-    #     if not response.data.get('is_active', True):  
-    #         return Response(status=status.HTTP_201_CREATED)  # Javob bo‘sh bo‘ladi, lekin xato chiqmaydi
-    #     return response
+
 
 class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all().order_by('-petition_id')
