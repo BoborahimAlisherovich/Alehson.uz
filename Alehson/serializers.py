@@ -346,12 +346,6 @@ class ImagesSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(instance.image.url) if instance.image else None
 from rest_framework.serializers import SkipField
 
-# class FilteredListSerializer(serializers.ListSerializer):
-#     def to_representation(self, data):
-#         # Agar bu queryset bo'lsa, faqat is_active=True bo'lgan obyektlarni filtrlaymiz
-#         if not isinstance(data, list):
-#             data = data.filter(is_active=False)  # Faqat is_active=True bo'lgan obyektlarni filtrlash
-#         return super().to_representation(data)
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
