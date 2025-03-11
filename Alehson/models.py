@@ -72,6 +72,8 @@ class Application(models.Model):
         region = models.CharField(max_length=300)
         birthday = models.DateField()
         category = models.ForeignKey(Category, related_name='Applications', on_delete=models.CASCADE)
+        subCategory = models.ForeignKey(SubCategory, related_name='applications', on_delete=models.CASCADE)
+
         information = models.TextField()
         plastic_card = models.CharField(max_length=16)
         is_active = models.BooleanField(default=False)

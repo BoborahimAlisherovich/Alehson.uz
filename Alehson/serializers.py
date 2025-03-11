@@ -378,7 +378,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
         # list_serializer_class = FilteredListSerializer  # FilteredListSerializer ni qo'shamiz
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday', "is_top",
-            'information', 'plastic_card', 'region', 'category',
+            'information', 'plastic_card', 'region', 'category','subCategory',
             'view_count', 'passport_number', 'created_date', 'image_urls', 'images'
         ]
 
@@ -432,7 +432,7 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
         model = Application
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday', 'is_top',
-            'information', 'plastic_card', 'region', 'category',
+            'information', 'plastic_card', 'region', 'category','subCategory',
             'view_count', 'passport_number', 'is_active', 'created_date', 'images'
         ]
 
