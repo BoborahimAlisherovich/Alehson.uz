@@ -372,14 +372,14 @@ class ApplicationSerializer(serializers.ModelSerializer):
     )
     images = serializers.SerializerMethodField()
     view_count = serializers.SerializerMethodField()
-    category = CategorySerializer(read_only=True)
+    # category = CategorySerializer(read_only=True)
 
     class Meta:
         model = Application
         # list_serializer_class = FilteredListSerializer  # FilteredListSerializer ni qo'shamiz
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday', "is_top",
-            'information', 'plastic_card', 'region', 'category',
+            'information', 'plastic_card', 'region', 'category','subCategory',  
             'view_count', 'passport_number', 'created_date', 'image_urls', 'images'
         ]
 
