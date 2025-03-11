@@ -393,7 +393,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Yangi ariza yaratish va unga tegishli rasmlar URL-larini saqlash"""
-        image_urls = validated_data.pop('image_urls', [])  # Foydalanuvchi kiritgan URL larni olish
+        image_urls = validated_data.pop('image_urls', []) 
         application = Application.objects.create(**validated_data)
 
         for url in image_urls:
