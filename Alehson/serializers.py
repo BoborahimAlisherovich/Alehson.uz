@@ -376,7 +376,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Application
-        # list_serializer_class = FilteredListSerializer  # FilteredListSerializer ni qo'shamiz
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday', "is_top",
             'information', 'plastic_card', 'region', 'category','subCategory',  
