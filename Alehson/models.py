@@ -1,7 +1,8 @@
 from django.db import models
 from ckeditor.fields import RichTextField
-from hitcount.models import HitCountMixin,HitCount
-from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models.signals import pre_save
+
+from pytils.translit import slugify
 
 
 class Category(models.Model):
@@ -26,9 +27,6 @@ class SubCategory(models.Model):
 
 
 
-from django.db import models
-from django.utils.text import slugify
-from django.db.models.signals import pre_save
 
 class News(models.Model):
     title = models.CharField(max_length=100)
@@ -40,13 +38,18 @@ class News(models.Model):
     view_count = models.IntegerField(default=0)
     slug = models.SlugField(max_length=100, unique=True, editable=False)  # Admin panelda o‘zgartirib bo‘lmaydi
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)  # Kirillchani lotinga o‘giradi
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        
         return self.title
 
     class Meta:
         verbose_name = 'News'
         verbose_name_plural = 'News'
+
 
 from django.core.exceptions import ValidationError
 
