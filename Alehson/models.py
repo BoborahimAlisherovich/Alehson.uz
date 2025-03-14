@@ -4,7 +4,6 @@ from django.db.models.signals import pre_save
 
 from pytils.translit import slugify
 
-
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to="Images/categories/", blank=True, null=True)
@@ -75,7 +74,7 @@ class Application(models.Model):
         region = models.CharField(max_length=300)
         birthday = models.DateField()
         category = models.ForeignKey(Category, related_name='Applications', on_delete=models.CASCADE)
-        subCategory = models.ForeignKey(SubCategory, related_name='applications', on_delete=models.CASCADE)
+        subCategory = models.ForeignKey(SubCategory, related_name='applications', on_delete=models.CASCADE,blank=True, null=True)
 
         information = models.TextField()
         plastic_card = models.CharField(max_length=16)
@@ -95,3 +94,4 @@ class Images(models.Model):
 
     def __str__(self):
         return f"Image for {self.application.full_name}"
+    

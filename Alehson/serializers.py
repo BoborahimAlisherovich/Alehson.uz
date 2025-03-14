@@ -356,7 +356,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
 
     image_urls = serializers.ListField(
-        child=serializers.URLField(), write_only=True, required=False
+        child=serializers.ImageField(), write_only=True, required=False
     )
     images = serializers.SerializerMethodField()
     view_count = serializers.SerializerMethodField()
