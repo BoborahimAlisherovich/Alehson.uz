@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import News, Application, Images, Category, SubCategory
+from .models import News, Application, Images, Category, SubCategory,Home,About,SiteHelp
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import pagination
 from django.utils.text import slugify
@@ -14,6 +14,9 @@ from .serializers import (
     SubCategorySerializer,
     ImagesSerializer,
     ApplicationIsActiveSerializer,
+    SiteHelpSeralizer,
+    AboutSeralizer,
+    HomeSeralizer
 )
 
 
@@ -98,3 +101,20 @@ class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
         application.is_active = not application.is_active
         application.save()
         return Response({'message': 'Application active status changed', 'is_active': application.is_active}, status=status.HTTP_200_OK)
+
+
+
+class HomeViewSet(viewsets.ModelViewSet):
+    queryset = Home.objects.all()
+    serializer_class = HomeSeralizer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class AboutViewSet(viewsets.ModelViewSet):
+    queryset = About.objects.all()
+    serializer_class = AboutSeralizer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class SiteHelpViewSet(viewsets.ModelViewSet):
+    queryset = SiteHelp.objects.all()
+    serializer_class = SiteHelpSeralizer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

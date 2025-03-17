@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import News, Category, SubCategory,Images,Application
+from .models import News, Category, SubCategory,Images,Application,Home,About,SiteHelp
 
 # @admin.register(News)
 # class NewsAdmin(admin.ModelAdmin):
@@ -67,3 +67,16 @@ class ApplicationAdmin(admin.ModelAdmin):
 # @admin.register(Images)
 # class ImagesAdmin(admin.ModelAdmin):
 #     list_display = ('id', 'image', 'application')
+
+
+@admin.register(Home)
+class HomeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'image', 'image2', 'image3', 'image4')
+
+@admin.register(About)
+class AboutAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description')
+
+@admin.register(SiteHelp)
+class SiteHelpAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description')

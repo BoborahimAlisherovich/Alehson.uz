@@ -13,6 +13,9 @@ from Alehson.views import (
     SubCategoryViewSet,
     ApplicationViewSet,
     ApplicationIsActiveViewSet,
+    HomeViewSet,
+    AboutViewSet,
+    SiteHelpViewSet
 )
 
 schema_view = get_schema_view(
@@ -54,10 +57,22 @@ urlpatterns = [
     path("application/<int:pk>/", ApplicationViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
     # path("application/<int:pk>/increment/", ApplicationViewSet.as_view({'post': 'increment_view_count'})),
 
+
+
     # Application Is Active CRUD
     path("application-is-active/", ApplicationIsActiveViewSet.as_view({'get': 'list', 'post': 'create'})),
     path("application-is-active/<int:pk>/", ApplicationIsActiveViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
     path("application-is-active/<int:pk>/toggle/", ApplicationIsActiveViewSet.as_view({'patch': 'toggle_active_status'})),
+    path("home-settings/", HomeViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("home-settings/<int:pk>/", HomeViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+
+    path("about-settings/", AboutViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("about-settings/<int:pk>/", AboutViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+
+    path("site-help-settings/", SiteHelpViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("site-help-settings/<int:pk>/", SiteHelpViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+
+    
 
    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

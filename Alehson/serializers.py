@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import News, Category, SubCategory, Images, Application
+from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp
 import re
 from datetime import date,datetime
 import base64
@@ -415,15 +415,43 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(validators=[BirthDateValidator()])
     plastic_card = serializers.CharField(validators=[PlasticCardValidator()])
     images = serializers.SerializerMethodField()
+    image_urls = serializers.ListField(
+        child=serializers.ImageField(), write_only=True, required=False
+    )
+    view_count = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Application
         fields = [
             'petition_id', 'full_name', 'phone_number', 'birthday', 'is_top',
             'information', 'plastic_card', 'region', 'category','subCategory',
-            'view_count', 'passport_number', 'is_active', 'created_date', 'images'
+            'view_count', 'passport_number', 'is_active', 'created_date', 'images','image_urls'
         ]
 
     def get_images(self, obj):
         request = self.context.get('request')
         return [request.build_absolute_uri(image.image.url) for image in obj.images.all()]
+    
+    def get_view_count(self, obj):
+        """View count qiymatini qaytarish"""
+        return obj.view_count
+    
+
+
+class HomeSeralizer(serializers.ModelSerializer):
+    class Meta:
+        model = Home
+        fields = ["title","image","image2","image3","image4","titleAbaut","description"]
+
+
+class AboutSeralizer(serializers.ModelSerializer):
+    class Meta:
+        model = About
+        fields = ["image","title","description"]
+    
+class SiteHelpSeralizer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteHelp
+        fields = ["title","description","image"]
+  

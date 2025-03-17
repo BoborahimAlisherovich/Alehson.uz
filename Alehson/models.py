@@ -95,3 +95,35 @@ class Images(models.Model):
     def __str__(self):
         return f"Image for {self.application.full_name}"
     
+
+
+#site settings 
+
+class Home(models.Model):
+    title = models.CharField(max_length=100, blank=True, null=True)
+    image = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True)
+    #yana 
+    image2 = models.ImageField(upload_to="Images/Home" ,max_length=100,blank=True, null=True)
+    image3 = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True)
+    image4 = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True) 
+    titleAbaut = models.CharField(max_length=100,blank=True, null=True) 
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+    
+class About(models.Model):
+    image = models.ImageField(upload_to="Images/About",blank=True, null=True)
+    title = models.CharField(max_length=100,blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    def __str__(self):
+        return self.title
+
+class SiteHelp(models.Model):
+    title = models.CharField(max_length=100,blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to="Images/SiteHelp",blank=True, null=True)
+    
+    def __str__(self):
+        return self.title
+    
