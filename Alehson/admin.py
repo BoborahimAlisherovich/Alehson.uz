@@ -71,7 +71,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(Home)
 class HomeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'image', 'image2', 'image3', 'image4')
+    list_display = ('title', 'image')
 
 @admin.register(About)
 class AboutAdmin(admin.ModelAdmin):

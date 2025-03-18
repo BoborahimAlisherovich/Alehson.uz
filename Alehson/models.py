@@ -100,18 +100,26 @@ class Images(models.Model):
 #site settings 
 
 class Home(models.Model):
+    iamge1 = models.ImageField(upload_to="Images/Home",blank=True, null=True)
     title = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True)
-    #yana 
-    image2 = models.ImageField(upload_to="Images/Home" ,max_length=100,blank=True, null=True)
-    image3 = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True)
-    image4 = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True) 
+
     titleAbaut = models.CharField(max_length=100,blank=True, null=True) 
-    description = models.TextField(blank=True, null=True)
+    description_thick = models.TextField(blank=True, null=True)
+    description_thin = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.title
     
+
+class ImagesHome(models.Model):
+    home = models.ForeignKey(Home, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="images/home/", blank=True, null=True)
+
+    def __str__(self):
+        return f"Image for {self.home.title}"
+
+
 class About(models.Model):
     image = models.ImageField(upload_to="Images/About",blank=True, null=True)
     title = models.CharField(max_length=100,blank=True, null=True)
@@ -127,3 +135,13 @@ class SiteHelp(models.Model):
     def __str__(self):
         return self.title
     
+
+class Contact(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=13)
+    message = models.TextField()
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"        
