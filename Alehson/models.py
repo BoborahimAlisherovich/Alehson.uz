@@ -100,6 +100,7 @@ class Images(models.Model):
 #site settings 
 
 class Home(models.Model):
+    image = models.ImageField(upload_to="images/home/", blank=True, null=True)
     title = models.CharField(max_length=100, blank=True, null=True)
     titleAbaut = models.CharField(max_length=100,blank=True, null=True) 
     description = models.TextField(blank=True, null=True)

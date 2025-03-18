@@ -90,8 +90,8 @@ urlpatterns = [
     path("petition-settings/", petitionViewSet.as_view({'get': 'list', 'post': 'create'})),
     path("petition-settings/<int:pk>/", petitionViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
 
-    path("Aplecation-settings/", AplecationSetingsViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path("Aplecation-settings/<int:pk>/", AplecationSetingsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+    path("application-settings/", AplecationSetingsViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("application-settings/<int:pk>/", AplecationSetingsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
 
    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

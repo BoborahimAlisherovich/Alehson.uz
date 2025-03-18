@@ -443,14 +443,13 @@ class ImagesHomeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ImagesHome
-        fields = ['id', 'iamge']
+        fields = ['id', 'image_url']
 
     def get_image_url(self, instance):
         request = self.context.get('request')
         return request.build_absolute_uri(instance.image.url)
 
 class HomeSeralizer(serializers.ModelSerializer):
-
     image_urls = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False
     )
@@ -458,8 +457,22 @@ class HomeSeralizer(serializers.ModelSerializer):
 
     class Meta:
         model = Home
-        fields = ["title","image","titleAbaut","description","image_urls","images"]
+        fields = ["title",'image', "titleAbaut", "description", "image_urls", "images"]
 
+    def get_images(self, obj):
+        """Uyga tegishli rasmlarni to'liq URL shaklida ro‘yxat qilib chiqaradi"""
+        request = self.context.get('request')
+        return [request.build_absolute_uri(image.image.url) for image in obj.images.all()]
+
+    def create(self, validated_data):
+        """Yangi uy yaratish va unga tegishli rasmlar URL-larini saqlash"""
+        image_urls = validated_data.pop('image_urls', [])
+        home = Home.objects.create(**validated_data)
+
+        for url in image_urls:
+            ImagesHome.objects.create(home=home, image=url)  # URL dan rasm saqlash
+
+        return home
 
 class AboutSeralizer(serializers.ModelSerializer):
     class Meta:
