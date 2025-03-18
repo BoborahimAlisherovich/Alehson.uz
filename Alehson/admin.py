@@ -75,7 +75,7 @@ class HomeAdmin(admin.ModelAdmin):
 
 @admin.register(About)
 class AboutAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description')
+    list_display = ('title', 'description_thick')
 
 @admin.register(SiteHelp)
 class SiteHelpAdmin(admin.ModelAdmin):

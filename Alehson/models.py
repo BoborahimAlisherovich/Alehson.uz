@@ -64,7 +64,7 @@ def set_news_slug(sender, instance, **kwargs):
 
 
 pre_save.connect(set_news_slug, sender=News)
-
+    
 
 class Application(models.Model):
         petition_id = models.AutoField(primary_key=True)
@@ -102,7 +102,7 @@ class Images(models.Model):
 class Home(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True)
-
+    
     titleAbaut = models.CharField(max_length=100,blank=True, null=True) 
     description = models.TextField(blank=True, null=True)
 
@@ -164,3 +164,11 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"        
+
+
+class CategorySettings(models.Model):
+    image = models.ImageField(upload_to="images/categories_settings/", blank=True, null=True, verbose_name="Image")
+    title = models.CharField(max_length=255, verbose_name="Title")
+    
+    def __str__(self):
+        return self.title
