@@ -100,17 +100,33 @@ class Images(models.Model):
 #site settings 
 
 class Home(models.Model):
-    iamge1 = models.ImageField(upload_to="Images/Home",blank=True, null=True)
     title = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(upload_to="Images/Home", max_length=100,blank=True, null=True)
 
     titleAbaut = models.CharField(max_length=100,blank=True, null=True) 
-    description_thick = models.TextField(blank=True, null=True)
-    description_thin = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.title
     
+
+
+#help
+class Help(models.Model):
+    title = models.CharField(max_length=100,blank=True, null=True)
+    image = models.ImageField(upload_to="Images/Help",blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    slug = models.SlugField(max_length=100, unique=True, editable=False)
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)  
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+
 
 class ImagesHome(models.Model):
     home = models.ForeignKey(Home, on_delete=models.CASCADE, related_name="images")
@@ -121,9 +137,12 @@ class ImagesHome(models.Model):
 
 
 class About(models.Model):
+    image_main = models.ImageField(upload_to="Images/About",blank=True, null=True)
     image = models.ImageField(upload_to="Images/About",blank=True, null=True)
     title = models.CharField(max_length=100,blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+
+    description_thick = models.TextField(blank=True, null=True)
+    description_thin = models.TextField(blank=True, null=True)
     def __str__(self):
         return self.title
 
