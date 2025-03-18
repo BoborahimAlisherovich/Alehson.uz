@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import News, Application, Images, Category, SubCategory,Home,About,SiteHelp
+from .models import News, Application, Images, Category, SubCategory,Home,About,SiteHelp, Contact
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import pagination
 from django.utils.text import slugify
@@ -16,7 +16,8 @@ from .serializers import (
     ApplicationIsActiveSerializer,
     SiteHelpSeralizer,
     AboutSeralizer,
-    HomeSeralizer
+    HomeSeralizer,
+    ContactSerializer
 )
 
 
@@ -118,3 +119,9 @@ class SiteHelpViewSet(viewsets.ModelViewSet):
     queryset = SiteHelp.objects.all()
     serializer_class = SiteHelpSeralizer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+class ContactViewSet(viewsets.ModelViewSet):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    

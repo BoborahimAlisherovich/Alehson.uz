@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import News, Category, SubCategory,Images,Application,Home,About,SiteHelp
+from .models import News, Category, SubCategory,Images,Application,Home,About,SiteHelp, Contact
 
 # @admin.register(News)
 # class NewsAdmin(admin.ModelAdmin):
@@ -80,3 +80,8 @@ class AboutAdmin(admin.ModelAdmin):
 @admin.register(SiteHelp)
 class SiteHelpAdmin(admin.ModelAdmin):
     list_display = ('title', 'description')
+    
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('phone_number', 'email', 'message')
+    

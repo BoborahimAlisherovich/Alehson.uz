@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp
+from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact
 import re
 from datetime import date,datetime
 import base64
@@ -442,7 +442,7 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
 class HomeSeralizer(serializers.ModelSerializer):
     class Meta:
         model = Home
-        fields = ["title","image","image2","image3","image4","titleAbaut","description"]
+        fields = ["title","image","titleAbaut","description_thick"]
 
 
 class AboutSeralizer(serializers.ModelSerializer):
@@ -455,3 +455,8 @@ class SiteHelpSeralizer(serializers.ModelSerializer):
         model = SiteHelp
         fields = ["title","description","image"]
   
+  
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = '__all__'
