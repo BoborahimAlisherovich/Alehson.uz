@@ -117,20 +117,19 @@ class ImagesHome(models.Model):
 
 
 
-#help
-class Help(models.Model):
-    title = models.CharField(max_length=100,blank=True, null=True)
-    image = models.ImageField(upload_to="Images/Help",blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    slug = models.SlugField(max_length=100, unique=True, editable=False)
-    
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)  
-        super().save(*args, **kwargs)
+    #help
+    class Help(models.Model):
+        title = models.CharField(max_length=100,blank=True, null=True)
+        image = models.ImageField(upload_to="Images/Help",blank=True, null=True)
+        description = models.TextField(blank=True, null=True)
+        slug = models.SlugField(max_length=100, unique=True, editable=False)
+        
+        def save(self, *args, **kwargs):
+            self.slug = slugify(self.title)  # Har safar slugni yangilash
+            super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.title
+        def __str__(self):
+            return self.title
 
 
 
