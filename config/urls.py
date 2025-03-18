@@ -16,7 +16,8 @@ from Alehson.views import (
     HomeViewSet,
     AboutViewSet,
     SiteHelpViewSet,
-    ContactViewSet
+    ContactViewSet,
+    CategorySettingsViewSet
 )
 
 schema_view = get_schema_view(
@@ -76,6 +77,8 @@ urlpatterns = [
     path("contact/", ContactViewSet.as_view({'get': 'list', 'post': 'create'})),
     path("contact/<int:pk>/", ContactViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
     
+    path("category-settings/", CategorySettingsViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("category-settings/<int:pk>/", CategorySettingsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
 
    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

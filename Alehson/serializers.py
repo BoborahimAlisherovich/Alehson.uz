@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact,Help,petitionsubmit,AplecationSetings
+
+from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact,Help,petitionsubmit,AplecationSetings,CategorySettings
 import re
 from datetime import date,datetime
 import base64
@@ -442,13 +443,13 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
 class HomeSeralizer(serializers.ModelSerializer):
     class Meta:
         model = Home
-        fields = ["title","image","titleAbaut","description_thick"]
+        fields = ["title","image","titleAbaut","description"]
 
 
 class AboutSeralizer(serializers.ModelSerializer):
     class Meta:
         model = About
-        fields = ["image","title","description"]
+        fields = "__all__"
     
 class SiteHelpSeralizer(serializers.ModelSerializer):
     class Meta:
@@ -463,7 +464,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class petitionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Application
+        model = petitionsubmit
         fields = '__all__'
 
 class HelpSerializer(serializers.ModelSerializer):
@@ -471,4 +472,15 @@ class HelpSerializer(serializers.ModelSerializer):
         model = Help
         fields = '__all__'
 
+class CategorySettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CategorySettings
+        fields = '__all__'
 
+
+        
+class CategorySettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CategorySettings
+        fields = '__all__'
+        
