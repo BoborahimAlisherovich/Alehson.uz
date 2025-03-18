@@ -88,4 +88,4 @@ class SiteHelpAdmin(admin.ModelAdmin):
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
     list_display = ('phone_number', 'email', 'message')
-    
+
