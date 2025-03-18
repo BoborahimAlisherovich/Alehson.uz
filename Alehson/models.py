@@ -108,7 +108,14 @@ class Home(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+class ImagesHome(models.Model):
+    home = models.ForeignKey(Home, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="images/home/", blank=True, null=True)
+
+    def __str__(self):
+        return f"Image for {self.home.title}"
+
 
 
 #help
@@ -128,13 +135,6 @@ class Help(models.Model):
 
 
 
-class ImagesHome(models.Model):
-    home = models.ForeignKey(Home, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="images/home/", blank=True, null=True)
-
-    def __str__(self):
-        return f"Image for {self.home.title}"
-
 
 class About(models.Model):
     image_main = models.ImageField(upload_to="Images/About",blank=True, null=True)
@@ -143,6 +143,10 @@ class About(models.Model):
 
     description_thick = models.TextField(blank=True, null=True)
     description_thin = models.TextField(blank=True, null=True)
+
+    title_2 = models.CharField(max_length=100,blank=True, null=True)
+    description_2 = models.TextField(blank=True, null=True)
+
     def __str__(self):
         return self.title
 
@@ -155,6 +159,20 @@ class SiteHelp(models.Model):
         return self.title
     
 
+class AplecationSetings(models.Model):
+    title = models.CharField(max_length=100,blank=True, null=True)
+    image = models.ImageField(upload_to="Images/AplecationSetings",blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+    
+class petitionsubmit(models.Model):
+    iamge = models.ImageField(upload_to="Images/petitionsubmit",blank=True, null=True)
+    title = models.CharField(max_length=100,blank=True, null=True)
+    def __str__(self):
+        return self.title
+
+
 class Contact(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -164,3 +182,5 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"        
+    
+

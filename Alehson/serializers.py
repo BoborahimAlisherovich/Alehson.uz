@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact
+from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact,Help,petitionsubmit,AplecationSetings
 import re
 from datetime import date,datetime
 import base64
@@ -460,3 +460,15 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = '__all__'
+
+class petitionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Application
+        fields = '__all__'
+
+class HelpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Help
+        fields = '__all__'
+
+
