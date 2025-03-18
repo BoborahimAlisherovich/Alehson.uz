@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import News, Category, SubCategory,Images,Application,Home,About,SiteHelp, Contact
+from .models import News, Category, SubCategory,Images,Application,Home,About,SiteHelp, Contact, ImagesHome
 
 # @admin.register(News)
 # class NewsAdmin(admin.ModelAdmin):
@@ -52,6 +52,9 @@ class ImageInline(admin.TabularInline):  # Inline ko'rinishda chiqarish
     model = Images
     extra = 1  # Kamida 1 ta bo‘sh input chiqadi
 
+class HomeImageInline(admin.TabularInline):
+    model = ImagesHome
+    extra = 1
 
 @admin.register(Application)    
 class ApplicationAdmin(admin.ModelAdmin):
@@ -71,7 +74,8 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(Home)
 class HomeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'image')
+    list_display = ('title',)
+    inlines = [HomeImageInline]
 
 @admin.register(About)
 class AboutAdmin(admin.ModelAdmin):
