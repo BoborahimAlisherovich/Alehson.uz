@@ -109,6 +109,7 @@ class ApplicationIsActiveViewSet(viewsets.ModelViewSet):
         application.save()
         return Response({'message': 'Application active status changed', 'is_active': application.is_active}, status=status.HTTP_200_OK)
 
+    
 
 
 class HomeViewSet(viewsets.ModelViewSet):
