@@ -479,8 +479,8 @@ class CategorySettingsSerializer(serializers.ModelSerializer):
 
 
         
-class CategorySettingsSerializer(serializers.ModelSerializer):
+class AplecationSetingsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CategorySettings
+        model = AplecationSetings
         fields = '__all__'
         
