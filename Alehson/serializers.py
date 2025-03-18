@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact,Help,petitionsubmit,AplecationSetings,CategorySettings
+from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact,Help,petitionsubmit,AplecationSetings,CategorySettings,ImagesHome
 import re
 from datetime import date,datetime
 import base64
@@ -438,12 +438,27 @@ class ApplicationIsActiveSerializer(serializers.ModelSerializer):
         """View count qiymatini qaytarish"""
         return obj.view_count
     
+class ImagesHomeSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
 
+    class Meta:
+        model = ImagesHome
+        fields = ['id', 'iamge']
+
+    def get_image_url(self, instance):
+        request = self.context.get('request')
+        return request.build_absolute_uri(instance.image.url)
 
 class HomeSeralizer(serializers.ModelSerializer):
+
+    image_urls = serializers.ListField(
+        child=serializers.ImageField(), write_only=True, required=False
+    )
+    images = serializers.SerializerMethodField()
+
     class Meta:
         model = Home
-        fields = ["title","image","titleAbaut","description"]
+        fields = ["title","image","titleAbaut","description","image_urls","images"]
 
 
 class AboutSeralizer(serializers.ModelSerializer):

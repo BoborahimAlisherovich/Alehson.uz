@@ -17,7 +17,11 @@ from Alehson.views import (
     AboutViewSet,
     SiteHelpViewSet,
     ContactViewSet,
-    CategorySettingsViewSet
+    CategorySettingsViewSet,
+    AplecationSetingsViewSet,
+    HelpViewSet,
+    petitionViewSet
+    
 )
 
 schema_view = get_schema_view(
@@ -79,6 +83,15 @@ urlpatterns = [
     
     path("category-settings/", CategorySettingsViewSet.as_view({'get': 'list', 'post': 'create'})),
     path("category-settings/<int:pk>/", CategorySettingsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+ 
+    path("help-settings/", HelpViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("help-settings/<int:pk>/", HelpViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+ 
+    path("petition-settings/", petitionViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("petition-settings/<int:pk>/", petitionViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+
+    path("Aplecation-settings/", AplecationSetingsViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("Aplecation-settings/<int:pk>/", AplecationSetingsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
 
    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
