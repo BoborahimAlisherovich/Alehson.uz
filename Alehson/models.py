@@ -104,6 +104,12 @@ class Home(models.Model):
     titleAbaut = models.CharField(max_length=100,blank=True, null=True) 
     description = models.TextField(blank=True, null=True)
 
+    def clean(self):
+        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
+        if Home.objects.exists() and not self.pk:
+            raise ValidationError("Faqat bitta Home yozuvi qo‘shish mumkin!")
+
+
     def __str__(self):
         return self.title
 
@@ -117,6 +123,7 @@ class ImagesHome(models.Model):
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
+
 
 class Help(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True)
@@ -155,6 +162,12 @@ class About(models.Model):
     vision_title = models.CharField(max_length=100,blank=True, null=True)
     vision_description = models.TextField(blank=True, null=True)
 
+    def clean(self):
+        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
+        if About.objects.exists() and not self.pk:
+            raise ValidationError("Faqat bitta About yozuvi qo‘shish mumkin!")
+
+
 
     def __str__(self):
         return self.main_title
@@ -163,7 +176,11 @@ class SiteHelp(models.Model):
     title = models.CharField(max_length=100,blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to="Images/SiteHelp",blank=True, null=True)
-    
+    def clean(self):
+        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
+        if SiteHelp.objects.exists() and not self.pk:
+            raise ValidationError("Faqat bitta SiteHelp yozuvi qo‘shish mumkin!")
+
     def __str__(self):
         return self.title
     
@@ -172,12 +189,24 @@ class AplecationSetings(models.Model):
     title = models.CharField(max_length=100,blank=True, null=True)
     image = models.ImageField(upload_to="Images/AplecationSetings",blank=True, null=True)
 
+    def clean(self):
+        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
+        if AplecationSetings.objects.exists() and not self.pk:
+            raise ValidationError("Faqat bitta AplecationSetings yozuvi qo‘shish mumkin!")
+
+
     def __str__(self):
         return self.title
     
 class petitionsubmit(models.Model):
     image = models.ImageField(upload_to="Images/petitionsubmit",blank=True, null=True)
     title = models.CharField(max_length=100,blank=True, null=True)
+
+    def clean(self):
+        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
+        if petitionsubmit.objects.exists() and not self.pk:
+            raise ValidationError("Faqat bitta petitionsubmit yozuvi qo‘shish mumkin!")
+
     def __str__(self):
         return self.title
 
@@ -196,11 +225,22 @@ class Contact(models.Model):
 class ContactSettings(models.Model):
     image = models.ImageField(upload_to="Images/ContactSettings",blank=True, null=True)
     title = models.CharField(max_length=100,blank=True, null=True)
+    def clean(self):
+        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
+        if ContactSettings.objects.exists() and not self.pk:
+            raise ValidationError("Faqat bitta ContactSettings yozuvi qo‘shish mumkin!")
+
     
 
 class CategorySettings(models.Model):
     image = models.ImageField(upload_to="images/categories_settings/", blank=True, null=True, verbose_name="Image")
     title = models.CharField(max_length=255, verbose_name="Title")
+
+    def clean(self):
+        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
+        if CategorySettings.objects.exists() and not self.pk:
+            raise ValidationError("Faqat bitta CategorySettings yozuvi qo‘shish mumkin!")
+
     
     def __str__(self):
         return self.title

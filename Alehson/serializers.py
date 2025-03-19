@@ -449,6 +449,9 @@ class ImagesHomeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         return request.build_absolute_uri(instance.image.url)
 
+
+
+
 class HomeSeralizer(serializers.ModelSerializer):
     image_urls = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False
@@ -463,6 +466,7 @@ class HomeSeralizer(serializers.ModelSerializer):
         """Uyga tegishli rasmlarni to'liq URL shaklida ro‘yxat qilib chiqaradi"""
         request = self.context.get('request')
         return [request.build_absolute_uri(image.image.url) for image in obj.images.all()]
+    
 
     def create(self, validated_data):
         """Yangi uy yaratish va unga tegishli rasmlar URL-larini saqlash"""
@@ -473,16 +477,32 @@ class HomeSeralizer(serializers.ModelSerializer):
             ImagesHome.objects.create(home=home, image=url)  # URL dan rasm saqlash
 
         return home
+    def create(self, validated_data):
+        if Home.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta Home yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
+    
 
 class AboutSeralizer(serializers.ModelSerializer):
     class Meta:
         model = About
         fields = "__all__"
+    def create(self, validated_data):
+        if About.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta About yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
     
+
 class SiteHelpSeralizer(serializers.ModelSerializer):
     class Meta:
         model = SiteHelp
         fields = ["title","description","image"]
+    def create(self, validated_data):
+        if SiteHelp.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta SiteHelp yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
+    
+
   
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -491,6 +511,7 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = '__all__'
+   
 
     def validate_email(self, value):
         """ Email formatini tekshirish """
@@ -511,16 +532,35 @@ class petitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = petitionsubmit
         fields = '__all__'
+    def create(self, validated_data):
+        if petitionsubmit.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta petitionsubmit yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
+    
+        
 
 class HelpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Help
         fields = '__all__'
+    def create(self, validated_data):
+        if Help.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta Help yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
+    
+        
+    
 
 class CategorySettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CategorySettings
         fields = '__all__'
+    def create(self, validated_data):
+        if CategorySettings.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta CategorySettings yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
+    
+        
 
 
         
@@ -528,9 +568,20 @@ class AplecationSetingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AplecationSetings
         fields = '__all__'
+    def create(self, validated_data):
+        if AplecationSetings.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta AplecationSetings yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
+    
         
 
 class ContactSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactSettings
         fields = '__all__'
+    def create(self, validated_data):
+        if ContactSettings.objects.exists():
+            raise serializers.ValidationError({"error": "Faqat bitta ContactSettings yozuvi bo‘lishi mumkin!"})
+        return super().create(validated_data)
+    
+        
