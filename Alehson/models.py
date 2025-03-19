@@ -137,13 +137,19 @@ class Help(models.Model):
 class About(models.Model):
     image_main = models.ImageField(upload_to="Images/About",blank=True, null=True)
     image = models.ImageField(upload_to="Images/About",blank=True, null=True)
-    title = models.CharField(max_length=100,blank=True, null=True)
+    main_title = models.CharField(max_length=100,blank=True, null=True)
+    main_title2 = models.CharField(max_length=100,blank=True, null=True)
+    
 
     description_thick = models.TextField(blank=True, null=True)
     description_thin = models.TextField(blank=True, null=True)
 
-    title_2 = models.CharField(max_length=100,blank=True, null=True)
-    description_2 = models.TextField(blank=True, null=True)
+    mission_title = models.CharField(max_length=100,blank=True, null=True)
+    mission_description = models.TextField(blank=True, null=True)
+
+    vision_title = models.CharField(max_length=100,blank=True, null=True)
+    vision_description = models.TextField(blank=True, null=True)
+
 
     def __str__(self):
         return self.title
