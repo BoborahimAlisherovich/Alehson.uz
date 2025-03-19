@@ -132,10 +132,10 @@ class Help(models.Model):
     slug = models.SlugField(max_length=100, unique=True, editable=False)
     
     def clean(self):
-        """Modeldan faqat bitta nusxa bo‘lishini tekshirish"""
-        if Help.objects.exists() and not self.pk:
-            raise ValidationError("Faqat bitta Help yozuvi qo‘shish mumkin!")
-
+        """Modeldan faqat 3 ta nusxa bo‘lishini tekshirish"""
+        if Help.objects.count() >= 3 and not self.pk:
+            raise ValidationError("Faqat 3 ta Help yozuvi qo‘shish mumkin!")
+        
     def save(self, *args, **kwargs):
         self.full_clean()  # Validatsiya ishga tushadi
         self.slug = slugify(self.title)  
@@ -143,8 +143,6 @@ class Help(models.Model):
 
     def __str__(self):
         return self.title
-
-
 
 
 class About(models.Model):

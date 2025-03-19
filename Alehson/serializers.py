@@ -487,7 +487,7 @@ class AboutSeralizer(serializers.ModelSerializer):
     class Meta:
         model = About
         fields = "__all__"
-        
+
     def create(self, validated_data):
         if About.objects.exists():
             raise serializers.ValidationError({"error": "Faqat bitta About yozuvi bo‘lishi mumkin!"})
@@ -545,10 +545,9 @@ class HelpSerializer(serializers.ModelSerializer):
         model = Help
         fields = '__all__'
     def create(self, validated_data):
-        if Help.objects.exists():
-            raise serializers.ValidationError({"error": "Faqat bitta Help yozuvi bo‘lishi mumkin!"})
+        if Help.objects.count() >= 3:
+            raise serializers.ValidationError({"error": "Faqat 3 ta Help yozuvi bo‘lishi mumkin!"})
         return super().create(validated_data)
-    
         
     
 
