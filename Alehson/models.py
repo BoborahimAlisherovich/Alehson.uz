@@ -141,7 +141,7 @@ class About(models.Model):
 
     thick_title = models.CharField(max_length=100,blank=True, null=True)
     
-    description = models.TextField(blank=True, null=True)
+    description = models.CharField(max_length=500,blank=True, null=True)
 
     mission_title = models.CharField(max_length=100,blank=True, null=True)
     mission_description = models.TextField(blank=True, null=True)
@@ -170,7 +170,7 @@ class AplecationSetings(models.Model):
         return self.title
     
 class petitionsubmit(models.Model):
-    iamge = models.ImageField(upload_to="Images/petitionsubmit",blank=True, null=True)
+    image = models.ImageField(upload_to="Images/petitionsubmit",blank=True, null=True)
     title = models.CharField(max_length=100,blank=True, null=True)
     def __str__(self):
         return self.title
@@ -188,8 +188,9 @@ class Contact(models.Model):
     
 
 class ContactSettings(models.Model):
-    iamge = models.ImageField(upload_to="Images/ContactSettings",blank=True, null=True)
+    image = models.ImageField(upload_to="Images/ContactSettings",blank=True, null=True)
     title = models.CharField(max_length=100,blank=True, null=True)
+    
 
 class CategorySettings(models.Model):
     image = models.ImageField(upload_to="images/categories_settings/", blank=True, null=True, verbose_name="Image")

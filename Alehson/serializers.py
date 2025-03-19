@@ -484,11 +484,28 @@ class SiteHelpSeralizer(serializers.ModelSerializer):
         model = SiteHelp
         fields = ["title","description","image"]
   
-  
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = '__all__'
+
+    def validate_email(self, value):
+        """ Email formatini tekshirish """
+        try:
+            validate_email(value)
+        except ValidationError:
+            raise serializers.ValidationError("Noto‘g‘ri email manzili kiritildi.")
+        return value
+
+    def validate_phone_number(self, value):
+        """ Telefon raqamini faqat raqamlardan iborat ekanligini va uzunligini tekshirish """
+        if not re.fullmatch(r'^\+?[0-9]{9,13}$', value):
+            raise serializers.ValidationError("Telefon raqami noto‘g‘ri formatda. Faqat raqamlar va '+' belgisi bo‘lishi mumkin.")
+        return value
+
 
 class petitionSerializer(serializers.ModelSerializer):
     class Meta:

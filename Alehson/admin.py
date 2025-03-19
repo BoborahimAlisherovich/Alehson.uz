@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 
 
-from .models import News, Category, SubCategory,Images,Application,Home,About,SiteHelp, Contact,AplecationSetings,petitionsubmit,Help,CategorySettings, ImagesHome
+from .models import News, Category, SubCategory,Images,Application,Home,About,SiteHelp, Contact,AplecationSetings,petitionsubmit,Help,CategorySettings, ImagesHome,ContactSettings
 
 
 # @admin.register(News)
@@ -95,6 +95,11 @@ class ContactAdmin(admin.ModelAdmin):
 class petitionsubmitAdmin(admin.ModelAdmin):
     list_display = ["title",]
     
+@admin.register(CategorySettings)
+class CategorySettingsAdmin(admin.ModelAdmin):
+    list_display = ["title",]
+    
+
 @admin.register(AplecationSetings)
 class AplecationSetingsAdmin(admin.ModelAdmin):
     list_display = ["title",]
@@ -106,6 +111,6 @@ class HelpAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(CategorySettings)
-class CategorySettingsAdmin(admin.ModelAdmin):
+@admin.register(ContactSettings)
+class ContactSettingsAdmin(admin.ModelAdmin):
     list_display = ["title",'image']
