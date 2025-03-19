@@ -487,6 +487,7 @@ class AboutSeralizer(serializers.ModelSerializer):
     class Meta:
         model = About
         fields = "__all__"
+        
     def create(self, validated_data):
         if About.objects.exists():
             raise serializers.ValidationError({"error": "Faqat bitta About yozuvi bo‘lishi mumkin!"})
