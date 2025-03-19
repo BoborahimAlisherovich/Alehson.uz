@@ -20,7 +20,8 @@ from Alehson.views import (
     CategorySettingsViewSet,
     AplecationSetingsViewSet,
     HelpViewSet,
-    petitionViewSet
+    petitionViewSet,
+    ContactSettingsViewSet
     
 )
 
@@ -92,6 +93,9 @@ urlpatterns = [
 
     path("application-settings/", AplecationSetingsViewSet.as_view({'get': 'list', 'post': 'create'})),
     path("application-settings/<int:pk>/", AplecationSetingsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+    
+    path("contact-settings/", ContactSettingsViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path("contact-settings/<int:pk>/", ContactSettingsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
 
    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

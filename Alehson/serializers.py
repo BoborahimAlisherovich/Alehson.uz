@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact,Help,petitionsubmit,AplecationSetings,CategorySettings,ImagesHome
+from .models import News, Category, SubCategory, Images, Application,Home,About,SiteHelp, Contact,Help,petitionsubmit,AplecationSetings,CategorySettings,ImagesHome,ContactSettings
 import re
 from datetime import date,datetime
 import base64
@@ -512,3 +512,8 @@ class AplecationSetingsSerializer(serializers.ModelSerializer):
         model = AplecationSetings
         fields = '__all__'
         
+
+class ContactSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactSettings
+        fields = '__all__'
