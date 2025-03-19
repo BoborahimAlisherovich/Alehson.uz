@@ -1,7 +1,6 @@
 from django.db import models
 from ckeditor.fields import RichTextField
 from django.db.models.signals import pre_save
-
 from pytils.translit import slugify
 
 class Category(models.Model):
@@ -151,7 +150,7 @@ class About(models.Model):
 
 
     def __str__(self):
-        return self.title
+        return self.main_title
 
 class SiteHelp(models.Model):
     title = models.CharField(max_length=100,blank=True, null=True)
