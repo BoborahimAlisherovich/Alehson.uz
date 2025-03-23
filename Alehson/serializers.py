@@ -451,37 +451,38 @@ class ImagesHomeSerializer(serializers.ModelSerializer):
 
 
 
+from rest_framework import serializers
+from .models import Home, ImagesHome
 
 class HomeSeralizer(serializers.ModelSerializer):
-    image_urls = serializers.ListField(
+    images = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False
     )
-    images = serializers.SerializerMethodField()
+    image_gallery = serializers.SerializerMethodField()
 
     class Meta:
         model = Home
-        fields = ["title",'image', "titleAbaut", "description", "image_urls", "images"]
+        fields = ["title", "image", "titleAbaut", "description", "images", "image_gallery"]
 
-    def get_images(self, obj):
-        """Uyga tegishli rasmlarni to'liq URL shaklida ro‘yxat qilib chiqaradi"""
+    def get_image_gallery(self, obj):
         request = self.context.get('request')
-        return [request.build_absolute_uri(image.image.url) for image in obj.images.all()]
-    
+        return [
+            request.build_absolute_uri(img.image.url)
+            for img in obj.images.all()
+        ]
 
-    def create(self, validated_data):
-        """Yangi uy yaratish va unga tegishli rasmlar URL-larini saqlash"""
-        image_urls = validated_data.pop('image_urls', [])
-        home = Home.objects.create(**validated_data)
-
-        for url in image_urls:
-            ImagesHome.objects.create(home=home, image=url)  # URL dan rasm saqlash
-
-        return home
     def create(self, validated_data):
         if Home.objects.exists():
             raise serializers.ValidationError({"error": "Faqat bitta Home yozuvi bo‘lishi mumkin!"})
-        return super().create(validated_data)
-    
+        
+        images_data = validated_data.pop('images', [])
+        home = Home.objects.create(**validated_data)
+
+        for image in images_data:
+            ImagesHome.objects.create(home=home, image=image)
+
+        return home
+
 
 class AboutSeralizer(serializers.ModelSerializer):
     class Meta:
